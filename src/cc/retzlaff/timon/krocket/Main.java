@@ -4,14 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    private static final int STEP_COUNT = 100;
-    private static final int TEST_COUNT = 1_000;
+    private static final int STEP_COUNT = 1_000;
+    private static final int TEST_COUNT = 10_000;
 
     public static void main(String[] args) {
         String[] testInputLines = """
-                2 7
-                10 20 30 40
-                12 31 11 8""".split("\n");
+                9 1
+                10 20 12 3
+                20 20 14 3
+                33 15 23 16
+                0 60 60 0
+                48 16 120 70
+                160 100 160 40
+                170 100 200 100
+                215 120 230 95
+                230 135 245 110""".split("\n");
         Shot shot = findShot(testInputLines);
         System.out.println(shot);
         String[] numbers = testInputLines[0].split(" ");
@@ -128,8 +135,8 @@ public class Main {
                 g.drawLine((int) (shot.x1 * factor), (int) (shot.y1 * factor), (int) (shot.x2 * factor), (int) (shot.y2 * factor));
             }
             g.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(3));
-            for (Gate gate : gates) {
+            g2.setStroke(new BasicStroke(2));
+            for (final Gate gate : gates) {
                 g.drawLine((int) (gate.x1 * factor), (int) (gate.y1 * factor), (int) (gate.x2 * factor), (int) (gate.y2 * factor));
             }
         }
