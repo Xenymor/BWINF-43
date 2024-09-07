@@ -53,4 +53,14 @@ public class Shot {
     public double square(double v) {
         return v * v;
     }
+
+    @Override
+    public String toString() {
+        return "Shot{" +
+                "x1=" + x1 +
+                ", x2=" + x2 +
+                ", y1=" + y1 +
+                ", y2=" + y2 +
+                '}';
+    }
 }

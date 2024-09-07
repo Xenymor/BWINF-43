@@ -4,8 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    private static final int STEP_COUNT = 1_000;
-    private static final int TEST_COUNT = 10_000;
+    private static final int STEP_COUNT = 10_000;
 
     public static void main(String[] args) {
         String[] testInputLines = """
@@ -47,7 +46,6 @@ public class Main {
 
         final Gate firstGate = gates[0];
         final Gate lastGate = gates[gates.length - 1];
-        //TODO set STEP_COUNT to length * x
         final double stepSizeX1 = firstGate.getDiffX() / STEP_COUNT;
         final double stepSizeY1 = firstGate.getDiffY() / STEP_COUNT;
         final double stepSizeX2 = lastGate.getDiffX() / STEP_COUNT;
@@ -61,6 +59,7 @@ public class Main {
                 double y2 = lastGate.y1 + stepSizeY2 * j;
                 Shot toTest = new Shot(x1, y1, x2, y2);
                 if (testShot(toTest, gates, radius)) {
+                    System.out.println(i + " " + j);
                     return toTest;
                 }
             }
@@ -69,28 +68,76 @@ public class Main {
     }
 
     private static boolean testShot(final Shot shot, final Gate[] gates, final double radius) {
-        int gateIndex = 0;
-        Gate gate = gates[gateIndex];
-        final double stepSizeX = shot.getDiffX() / TEST_COUNT;
-        final double stepSizeY = shot.getDiffY() / TEST_COUNT;
-
-        for (int i = 0; i < TEST_COUNT; i++) {
-            final double x = shot.x1 + stepSizeX * i;
-            final double y = shot.y1 + stepSizeY * i;
-
-            if (gate.dist(x, y) <= 0.1) {
-                if (gate.cornerDist(x, y) >= radius) {
-                    gateIndex++;
-                    if (gateIndex == gates.length) {
-                        return true;
-                    }
-                    gate = gates[gateIndex];
-                } else {
-                    return false;
-                }
+        double lastS = -0.5;
+        for (Gate gate : gates) {
+            double newS = getParam(shot, gate);
+            if (newS < lastS || !isLegit(newS, shot, gate, radius, true)) {
+                return false;
+            } else {
+                lastS = newS;
             }
         }
-        return false;
+        return true;
+    }
+
+    private static boolean isLegit(final double s, final Shot shot, final Gate gate, final double radius, boolean checkRadius) {
+        final double x = shot.getDiffX() * s + shot.x1;
+        final double y = shot.getDiffY() * s + shot.y1;
+
+        if (x <= Math.max(gate.x1, gate.x2) && x >= Math.min(gate.x1, gate.x2)
+                && y <= Math.max(gate.y1, gate.y2) && y >= Math.min(gate.y1, gate.y2)) {
+            return !checkRadius || checkRadius(shot, gate, radius);
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean checkRadius(final Shot shot, final Gate gate, final double radius) {
+        double u1 = shot.getDiffX();
+        double u2 = shot.getDiffY();
+        double n2 = -u1 / u2;
+        double dx = radius / Math.sqrt(1 + n2 * n2);
+        double dy = (radius * n2) / Math.sqrt(1 + n2 * n2);
+
+        final Shot test1 = new Shot(shot.x1 + dx, shot.y1 + dy, shot.x2 + dx, shot.y2 + dy);
+        final double s1 = getParam(test1, gate);
+        final Shot test2 = new Shot(shot.x1 - dx, shot.y1 - dy, shot.x2 - dx, shot.y2 - dy);
+        final double s2 = getParam(test2, gate);
+        return isLegit(s1, test1, gate, radius, false) && isLegit(s2, test2, gate, radius, false);
+    }
+
+    private static double getParam(final Shot shot, final Gate gate) {
+        final double a1 = shot.x1;
+        final double a2 = shot.y1;
+        final double u1 = shot.getDiffX();
+        final double u2 = shot.getDiffY();
+
+        final double b1 = gate.x1;
+        final double b2 = gate.y1;
+        final double v1 = gate.getDiffX();
+        final double v2 = gate.getDiffY();
+
+        if (u1 == 0 || u2 == 0 || v1 == 0 || v2 == 0) {
+            if ((u1 == v1 && u1 == 0) || (u2 == v2 && u2 == 0)) {
+                return -1;
+            }
+        } else {
+            if (u1 / u2 == v1 / v2 || u1 / u2 == -v1 / v2) {
+                return -1;
+            }
+        }
+
+        if (v1 == 0) {
+            if (v2 == 0) {
+                return -1;
+            } else {
+                return (b1 - a1) / u1;
+            }
+        } else {
+            final double p1 = a2 - b2 - (a1 * v2) / v1 + (b1 * v2) / v1;
+            final double p2 = (u1 * v2) / v1 - u2;
+            return p1 / p2;
+        }
     }
 
     private static void parseGates(final String[] inputLines, final Gate[] gates) {
@@ -109,6 +156,7 @@ public class Main {
         final int radius;
 
         final double factor;
+        private final int screenSize = 1000;
 
         public MyFrame(final Shot shot, final Gate[] gates, final int radius) {
             double max = Double.NEGATIVE_INFINITY;
@@ -117,9 +165,9 @@ public class Main {
                 max = max(gate.y1, gate.y2, max);
             }
 
-            setSize(1080, 1080);
+            setSize(screenSize, screenSize);
             max += 10;
-            factor = 1079 / max;
+            factor = (screenSize - 1) / max;
 
             this.shot = shot;
             this.gates = gates;
@@ -131,13 +179,13 @@ public class Main {
             Graphics2D g2 = (Graphics2D) g;
             if (shot != null) {
                 g.setColor(Color.RED);
-                g2.setStroke(new BasicStroke((float) (radius * factor)));
-                g.drawLine((int) (shot.x1 * factor), (int) (shot.y1 * factor), (int) (shot.x2 * factor), (int) (shot.y2 * factor));
+                g2.setStroke(new BasicStroke((int) (radius * 2 * factor)));
+                g.drawLine((int) (shot.x1 * factor), screenSize - (int) (shot.y1 * factor), (int) (shot.x2 * factor), screenSize - (int) (shot.y2 * factor));
             }
             g.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(2));
             for (final Gate gate : gates) {
-                g.drawLine((int) (gate.x1 * factor), (int) (gate.y1 * factor), (int) (gate.x2 * factor), (int) (gate.y2 * factor));
+                g.drawLine((int) (gate.x1 * factor), screenSize - (int) (gate.y1 * factor), (int) (gate.x2 * factor), screenSize - (int) (gate.y2 * factor));
             }
         }
 
