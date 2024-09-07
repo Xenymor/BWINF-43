@@ -17,7 +17,7 @@ public class Shot {
         return getDist(getDiffX(), getDiffY());
     }
 
-    private double getDist(final double diffX, final double diffY) {
+    double getDist(final double diffX, final double diffY) {
         return Math.sqrt(square(diffX) + square(diffY));
     }
 
@@ -52,9 +52,5 @@ public class Shot {
 
     public double square(double v) {
         return v * v;
-    }
-
-    public double cornerDist(final double x, final double y) {
-        return Math.min(getDist(x - x1, y - y1), getDist(x - x2, y - y2));
     }
 }
