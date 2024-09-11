@@ -56,11 +56,9 @@ public class Shot {
 
     @Override
     public String toString() {
-        return "Shot{" +
-                "x1=" + x1 +
-                ", x2=" + x2 +
-                ", y1=" + y1 +
-                ", y2=" + y2 +
-                '}';
+        final double diffX = getDiffX();
+        final double diffY = getDiffY();
+        double angle = diffX == 0 ? diffY > 0 ? 90 : -90 : Math.atan(diffY / diffX) * (360 / (2 * Math.PI));
+        return "x1=" + x1 + ";x2=" + x2 + ";angle:" + angle + "°";
     }
 }
