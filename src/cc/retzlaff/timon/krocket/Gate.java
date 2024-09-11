@@ -5,17 +5,4 @@ public class Gate extends Shot {
         super(x1, y1, x2, y2);
     }
 
-    public double cornerDist(final double x, final double y) {
-        return Math.min(getDist(x - x1, y - y1), getDist(x - x2, y - y2));
-    }
-
-    @Override
-    public String toString() {
-        return "Gate{" +
-                "x1=" + x1 +
-                ", x2=" + x2 +
-                ", y1=" + y1 +
-                ", y2=" + y2 +
-                '}';
-    }
 }
