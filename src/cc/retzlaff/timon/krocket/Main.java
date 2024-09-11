@@ -39,7 +39,7 @@ public class Main {
             return null;
         } else if (gates.length == 1) {
             Gate gate = gates[0];
-            if (radius < gate.getLength()) {
+            if (radius > gate.getLength()) {
                 return null;
             } else {
                 double u1 = gate.getDiffX();
