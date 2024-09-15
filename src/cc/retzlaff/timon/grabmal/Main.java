@@ -3,6 +3,9 @@ package cc.retzlaff.timon.grabmal;
 import java.rmi.UnexpectedException;
 import java.util.*;
 
+import static cc.retzlaff.timon.grabmal.MoveType.MOVE;
+import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         String[] inputLines = """
@@ -25,9 +28,17 @@ public class Main {
         do {
             state = toCheck.get(0);
             toCheck.remove(0);
+            if (state.time() == 27 && state.position() == 3) {
+                System.out.println();
+            }
             List<Move> allMoves = getAllMoves(state);
             for (Move move : allMoves) {
                 State futureState = getState(state, move);
+                if (move.direction().equals(WAIT) && futureState.position() >= 0) {
+                    if (move.number() >= getTimeUntil(state.gates()[state.position()], false, state.time())) {
+                        continue;
+                    }
+                }
                 if (previous.containsKey(futureState)) {
                     final State state1 = previous.get(futureState);
                     if (state.time() < state1.time()) {
@@ -45,15 +56,19 @@ public class Main {
         throw new Exception("Couldn't find a path");
     }
 
+    private static int getTimeUntil(final Gate gate, final boolean isOpen, final int time) {
+        return gate.open == isOpen ? 0 : gate.period - (time % gate.period);
+    }
+
     private static Path getPath(final State targetState, final Map<State, State> previous) throws UnexpectedException {
         List<Move> moves = new ArrayList<>();
         State curr = targetState;
         while (previous.containsKey(curr)) {
             State next = previous.get(curr);
             if (next.position() != curr.position()) {
-                moves.add(new Move(Directions.MOVE, curr.position() - next.position()));
+                moves.add(new Move(MOVE, curr.position() - next.position()));
             } else if (next.time() != curr.time()) {
-                moves.add(new Move(Directions.WAIT, curr.time() - next.time()));
+                moves.add(new Move(WAIT, curr.time() - next.time()));
             } else {
                 throw new UnexpectedException("???");
             }
@@ -93,31 +108,52 @@ public class Main {
         if (position > -1 && !gates[position].open) {
             return result;
         }
-
-        result.add(new Move(Directions.WAIT, getTimeUntilNextOpen(state, position)));
-        if (position != -1) {
-            final int timeUntilLastOpen = getTimeUntilLastOpen(state, position);
-            if (timeUntilLastOpen != Integer.MAX_VALUE)
-                result.add(new Move(Directions.WAIT, timeUntilLastOpen));
+        final int stateTime = state.time();
+        if (position == -1) {
+            final Gate gate = gates[0];
+            if (!gate.open) {
+                result.add(new Move(WAIT, getTimeUntil(gate, true, stateTime)));
+                return result;
+            } else {
+                final int dt1 = getTimeUntil(gate, false, stateTime);
+                final int time = stateTime + dt1;
+                result.add(new Move(WAIT, getTimeUntil(gate, true, time) + dt1));
+            }
+        } else {
+            getWaitingMovesFor(gates[position], gates[position + 1], stateTime, result);
+            if (position > 0) {
+                getWaitingMovesFor(gates[position], gates[position - 1], stateTime, result);
+            }
         }
 
-        for (int i = position + 1; i < gates.length; i++) {
-            if (gates[i].open) {
-                result.add(new Move(Directions.MOVE, i - position));
+        if (gates[position + 1].open) {
+            result.add(new Move(MOVE, 1));
+        }
+        if (position > 0) {
+            if (gates[position - 1].open) {
+                result.add(new Move(MOVE, -1));
+            }
+        }
+        return result;
+    }
+
+    private static void getWaitingMovesFor(final Gate currGate, final Gate neighbouringGate, final int time, final List<Move> result) {
+        int currTime = time;
+        int timeSpan = getTimeUntil(currGate, false, currTime);
+        while (timeSpan > 0) {
+            final int timeUntilNextGateOpen = getTimeUntil(neighbouringGate, true, currTime);
+            if (timeSpan > timeUntilNextGateOpen) {
+                timeSpan -= timeUntilNextGateOpen;
+                currTime += timeUntilNextGateOpen;
+                result.add(new Move(WAIT, currTime-time));
+
+                final int timeUntilNextGateClosed = getTimeUntil(neighbouringGate, false, currTime);
+                timeSpan -= timeUntilNextGateClosed;
+                currTime += timeUntilNextGateClosed;
             } else {
                 break;
             }
         }
-        if (position > 0) {
-            for (int i = position - 1; i >= 0; i--) {
-                if (gates[i].open) {
-                    result.add(new Move(Directions.MOVE, i - position));
-                } else {
-                    break;
-                }
-            }
-        }
-        return result;
     }
 
     private static int getTimeUntilLastOpen(final State state, final int position) {
@@ -125,7 +161,7 @@ public class Main {
         for (int i = position - 1; i >= 0; i--) {
             final Gate gate = gates[i];
             if (!gate.open) {
-                return getTimeUntilOpen(gate, state.time());
+                return getTimeUntil(gate, true, state.time());
             }
         }
         return Integer.MAX_VALUE;
@@ -136,15 +172,11 @@ public class Main {
         for (int i = position + 1; i < gates.length; i++) {
             final Gate gate = gates[i];
             if (!gate.open) {
-                return getTimeUntilOpen(gate, state.time());
+                return getTimeUntil(gate, true, state.time());
             }
         }
         System.out.println("Unnecessary call");
         return Integer.MAX_VALUE;
-    }
-
-    private static int getTimeUntilOpen(final Gate gate, final int time) {
-        return gate.open ? 0 : gate.period - (time % gate.period);
     }
 
     private static Gate[] parseGates(final String[] input) {

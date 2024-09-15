@@ -18,10 +18,10 @@ public record Path(List<Move> moves) {
         final int number = move.number();
         switch (move.direction()) {
             case WAIT -> {
-                return "Warte für " + number + " " + (number == 1 ? "Minute" : "Minuten") + "; ";
+                return "Warte für " + number + " " + (Math.abs(number) == 1 ? "Minute" : "Minuten") + "; ";
             }
             case MOVE -> {
-                return "Gehe " + Math.abs(number) + " " + (number == 1 ? "Block" : "Blöcke") + " nach " + (number > 0 ? "rechts" : "links") + "; ";
+                return "Gehe " + Math.abs(number) + " " + (Math.abs(number) == 1 ? "Block" : "Blöcke") + " nach " + (number > 0 ? "rechts" : "links") + "; ";
             }
             default -> throw new IllegalArgumentException("Move direction " + move.direction() + " was not expected");
         }

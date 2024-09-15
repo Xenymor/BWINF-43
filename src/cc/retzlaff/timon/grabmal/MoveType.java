@@ -1,5 +1,5 @@
 package cc.retzlaff.timon.grabmal;
 
-public enum Directions {
+public enum MoveType {
     MOVE, WAIT
 }
