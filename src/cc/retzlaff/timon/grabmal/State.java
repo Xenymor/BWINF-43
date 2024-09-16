@@ -2,7 +2,7 @@ package cc.retzlaff.timon.grabmal;
 
 import java.util.Objects;
 
-public record State(Gate[] gates, int time, int position) {
+public record State(int time, int position) {
 
     @Override
     public boolean equals(final Object o) {

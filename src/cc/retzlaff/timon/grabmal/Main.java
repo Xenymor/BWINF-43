@@ -20,7 +20,7 @@ public class Main {
     private static Path findPath(final Gate[] gates) throws Exception {
         Map<State, State> previous = new HashMap<>();
         List<State> toCheck = new ArrayList<>();
-        State state = new State(gates, 0, -1);
+        State state = new State(0, -1);
         toCheck.add(state);
         do {
             state = toCheck.get(0);
@@ -28,11 +28,11 @@ public class Main {
             if (state.time() == 27 && state.position() == 3) {
                 System.out.println();
             }
-            List<Move> allMoves = getAllMoves(state);
+            List<Move> allMoves = getAllMoves(state, gates);
             for (Move move : allMoves) {
                 State futureState = getState(state, move);
                 if (move.direction().equals(WAIT) && futureState.position() >= 0) {
-                    if (move.number() >= getTimeUntil(state.gates()[state.position()], false, state.time())) {
+                    if (move.number() >= getTimeUntil(gates[state.position()], false, state.time())) {
                         continue;
                     }
                 }
@@ -82,21 +82,20 @@ public class Main {
     private static State getState(final State state, final Move move) {
         switch (move.direction()) {
             case WAIT -> {
-                return new State(state.gates(), state.time() + move.number(), state.position());
+                return new State(state.time() + move.number(), state.position());
             }
             case MOVE -> {
-                return new State(state.gates(), state.time(), state.position() + move.number());
+                return new State(state.time(), state.position() + move.number());
             }
             default -> throw new IllegalArgumentException("The move direction " + move.direction() + " was not expected");
         }
     }
 
-    private static List<Move> getAllMoves(final State state) {
+    private static List<Move> getAllMoves(final State state, final Gate[] gates) {
         List<Move> result = new ArrayList<>();
         final int stateTime = state.time();
 
         int position = state.position();
-        final Gate[] gates = state.gates();
         if (position > -1 && !gates[position].isOpen(stateTime)) {
             return result;
         }
