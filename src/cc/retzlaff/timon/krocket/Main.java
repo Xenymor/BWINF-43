@@ -2,25 +2,37 @@ package cc.retzlaff.timon.krocket;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Main {
     private static final int STEP_COUNT = 10_000;
+    public static final int TRY_COUNT = 20;
 
-    public static void main(String[] args) {
-        String[] testInputLines = """
-                9 1
-                10 20 12 3
-                20 20 14 3
-                33 15 23 16
-                0 60 60 0
-                48 16 120 70
-                160 100 160 40
-                170 100 200 100
-                215 120 230 95
-                230 135 245 110""".split("\n");
-        Shot shot = findShot(testInputLines);
+    //Expected output: x1=11.2736;x2=238.943;angle:25.975357705716817°
+    //Time: 4268.80465+/-111.57005ms; avg.: 4264.71221ms
+    public static void main(String[] args) throws IOException {
+        java.util.List<String> testInputLines = Files.readAllLines(Path.of(args[0]));
+        Shot shot = null;
+        long min = Long.MAX_VALUE;
+        long max = Long.MIN_VALUE;
+        long sum = 0;
+        for (int i = 0; i < TRY_COUNT; i++) {
+            long start = System.nanoTime();
+            shot = findShot(testInputLines);
+            long end = System.nanoTime();
+            long time = end - start;
+            min = Math.min(time, min);
+            max = Math.max(time, max);
+            sum += time;
+        }
+        double avg = (sum / ((double) TRY_COUNT)) / 1_000_000;
+        double mean = (min + max) / 2_000_000d;
+        double deviation = (max - min) / 2_000_000d;
+        System.out.println("Time: " + mean + "+/-" + deviation + "ms; avg.: " + avg + "ms");
         System.out.println(shot);
-        String[] numbers = testInputLines[0].split(" ");
+        String[] numbers = testInputLines.get(0).split(" ");
         int radius = Integer.parseInt(numbers[1]);
         Gate[] gates = new Gate[Integer.parseInt(numbers[0])];
         parseGates(testInputLines, gates);
@@ -30,8 +42,8 @@ public class Main {
         myFrame.setVisible(true);
     }
 
-    private static Shot findShot(final String[] inputLines) {
-        String[] numbers = inputLines[0].split(" ");
+    private static Shot findShot(final java.util.List<String> inputLines) {
+        String[] numbers = inputLines.get(0).split(" ");
         int radius = Integer.parseInt(numbers[1]);
         Gate[] gates = new Gate[Integer.parseInt(numbers[0])];
         parseGates(inputLines, gates);
@@ -151,9 +163,9 @@ public class Main {
         }
     }
 
-    private static void parseGates(final String[] inputLines, final Gate[] gates) {
+    private static void parseGates(final java.util.List<String> inputLines, final Gate[] gates) {
         for (int i = 0; i < gates.length; i++) {
-            String[] values = inputLines[i + 1].split(" ");
+            String[] values = inputLines.get(i + 1).split(" ");
             gates[i] = new Gate(Integer.parseInt(values[0]),
                     Integer.parseInt(values[1]),
                     Integer.parseInt(values[2]),
@@ -161,6 +173,7 @@ public class Main {
         }
     }
 
+    //TODO delete
     private static class MyFrame extends JFrame {
         final Shot shot;
         final Gate[] gates;
