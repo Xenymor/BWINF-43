@@ -9,10 +9,12 @@ import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
 public class Main {
     public static void main(String[] args) throws Exception {
         String[] inputLines = """
-                3
                 5
-                8
-                12""".split("\n");
+                17
+                13
+                7
+                9
+                13""".split("\n");
         Gate[] gates = parseGates(inputLines);
         Path path = findPath(gates);
         System.out.println(path);
