@@ -3,21 +3,62 @@ package cc.retzlaff.timon.grabmal;
 import java.nio.file.Files;
 import java.util.*;
 
-import static cc.retzlaff.timon.grabmal.MoveType.MOVE;
-import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
-
 public class Main {
     public static void main(String[] args) throws Exception {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
-        Path path = findPath(gates);
-        System.out.println(path);
+        long start = System.nanoTime();
+        List<State> states = findPath(gates);
+        long finish = System.nanoTime();
+        System.out.println(pathToString(states));
+        System.out.println("Rechenzeit: " + ((finish - start) / 1_000_000.0) + "ms");
     }
 
-    private static Path findPath(final Gate[] gates) throws Exception {
+    private static String pathToString(final List<State> states) {
+        StringBuilder stringBuilder = new StringBuilder();
+        final String moveString = "Laufe in den Abschnitt";
+        final String waitString = "Warte für";
+        if (states.size() > 1) {
+            boolean waiting = false;
+            int count = 0;
+            State last = states.get(0);
+            for (int i = 1; i < states.size(); i++) {
+                final State state = states.get(i);
+                if (state.time() != last.time()) {
+                    if (!waiting) {
+                        if (last.position() != -1) {
+                            stringBuilder.append(moveString).append(" ").append(last.position() + 1).append("; ");
+                        }
+                        waiting = true;
+                    }
+                    count += state.time() - last.time();
+                } else if (state.position() != last.position()) {
+                    if (waiting) {
+                        stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+                        waiting = false;
+                        count = 0;
+                    }
+                }
+                last = state;
+            }
+            if (count != 0) {
+                stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+            }
+        }
+        String result = stringBuilder.toString();
+        final String finishString = "Laufe zum Grabmal";
+        if (!result.matches("(?s).*" + moveString + " [0123456789]+; $")) {
+            result += finishString;
+        } else {
+            result = result.replaceAll(moveString + " [0123456789]+; $", finishString);
+        }
+        return result;
+    }
+
+    private static List<State> findPath(final Gate[] gates) throws Exception {
         Map<State, State> previous = new HashMap<>();
         List<State> toCheck = new ArrayList<>();
-        State state = new State(gates, 0, -1);
+        State state = new State(0, -1);
         toCheck.add(state);
         do {
             state = toCheck.get(0);
@@ -25,11 +66,10 @@ public class Main {
             if (state.time() == 27 && state.position() == 3) {
                 System.out.println();
             }
-            List<Move> allMoves = getAllMoves(state);
-            for (Move move : allMoves) {
-                State futureState = getState(state, move);
-                if (move.direction().equals(WAIT) && futureState.position() >= 0) {
-                    if (move.number() >= getTimeUntil(state.gates()[state.position()], false, state.time())) {
+            List<State> allFutureStates = getAllMoves(state, gates);
+            for (State futureState : allFutureStates) {
+                if ((state.time() != futureState.time()) && futureState.position() >= 0) {
+                    if ((futureState.time() - state.time()) >= getTimeUntil(gates[state.position()], false, state.time())) {
                         continue;
                     }
                 }
@@ -51,10 +91,10 @@ public class Main {
     }
 
     private static int getTimeUntil(final Gate gate, final boolean isOpen, final int time) {
-        return gate.open == isOpen ? 0 : gate.period - (time % gate.period);
+        return gate.isOpen(time) == isOpen ? 0 : gate.getPeriod() - (time % gate.getPeriod());
     }
 
-    private static Path getPath(final State targetState, final Map<State, State> previous) {
+    private static List<State> getPath(final State targetState, final Map<State, State> previous) {
         List<State> states = new ArrayList<>();
         State curr = targetState;
         while (previous.containsKey(curr)) {
@@ -63,7 +103,7 @@ public class Main {
             curr = next;
         }
         Collections.reverse(states);
-        return new Path(states);
+        return states;
     }
 
     private static void addState(final List<State> toCheck, final State futureState) {
@@ -76,56 +116,43 @@ public class Main {
         toCheck.add(futureState);
     }
 
-    private static State getState(final State state, final Move move) {
-        switch (move.direction()) {
-            case WAIT -> {
-                return new State(state.gates(), state.time() + move.number(), state.position());
-            }
-            case MOVE -> {
-                return new State(state.gates(), state.time(), state.position() + move.number());
-            }
-            default -> throw new IllegalArgumentException("The move direction " + move.direction() + " was not expected");
-        }
-    }
+    private static List<State> getAllMoves(final State state, final Gate[] gates) {
+        List<State> result = new ArrayList<>();
+        final int stateTime = state.time();
 
-    private static List<Move> getAllMoves(final State state) {
-        List<Move> result = new ArrayList<>();
-
-        int position = state.position();
-        final Gate[] gates = state.gates();
-        if (position > -1 && !gates[position].open) {
+        final int position = state.position();
+        if (position > -1 && !gates[position].isOpen(stateTime)) {
             return result;
         }
-        final int stateTime = state.time();
         if (position == -1) {
             final Gate gate = gates[0];
-            if (!gate.open) {
-                result.add(new Move(WAIT, getTimeUntil(gate, true, stateTime)));
+            if (!gate.isOpen(stateTime)) {
+                result.add(new State(stateTime + getTimeUntil(gate, true, stateTime), position));
                 return result;
             } else {
                 final int dt1 = getTimeUntil(gate, false, stateTime);
                 final int time = stateTime + dt1;
-                result.add(new Move(WAIT, getTimeUntil(gate, true, time) + dt1));
+                result.add(new State(stateTime + getTimeUntil(gate, true, time) + dt1, position));
             }
         } else {
-            getWaitingMovesFor(gates[position], gates[position + 1], stateTime, result);
+            addWaitingMovesFor(gates[position], gates[position + 1], stateTime, position, result);
             if (position > 0) {
-                getWaitingMovesFor(gates[position], gates[position - 1], stateTime, result);
+                addWaitingMovesFor(gates[position], gates[position - 1], stateTime, position, result);
             }
         }
 
-        if (gates[position + 1].open) {
-            result.add(new Move(MOVE, 1));
+        if (gates[position + 1].isOpen(stateTime)) {
+            result.add(new State(stateTime, position + 1));
         }
         if (position > 0) {
-            if (gates[position - 1].open) {
-                result.add(new Move(MOVE, -1));
+            if (gates[position - 1].isOpen(stateTime)) {
+                result.add(new State(stateTime, position - 1));
             }
         }
         return result;
     }
 
-    private static void getWaitingMovesFor(final Gate currGate, final Gate neighbouringGate, final int time, final List<Move> result) {
+    private static void addWaitingMovesFor(final Gate currGate, final Gate neighbouringGate, final int time, final int position, final List<State> result) {
         int currTime = time;
         int timeSpan = getTimeUntil(currGate, false, currTime);
         while (timeSpan > 0) {
@@ -133,7 +160,7 @@ public class Main {
             if (timeSpan > timeUntilNextGateOpen) {
                 timeSpan -= timeUntilNextGateOpen;
                 currTime += timeUntilNextGateOpen;
-                result.add(new Move(WAIT, currTime - time));
+                result.add(new State(currTime, position));
 
                 final int timeUntilNextGateClosed = getTimeUntil(neighbouringGate, false, currTime);
                 timeSpan -= timeUntilNextGateClosed;

@@ -1,16 +1,13 @@
 package cc.retzlaff.timon.grabmal;
 
-public class Gate {
-    final int period;
-    boolean open;
+public record Gate(int period) {
 
-    public Gate(final int period) {
-        this.period = period;
-        open = false;
+    public boolean isOpen(final int time) {
+        return ((time / period) & 1) == 1;
     }
 
-    public Gate(final int period, final boolean open) {
-        this.period = period;
-        this.open = open;
+    public int getPeriod() {
+        return period;
     }
+
 }

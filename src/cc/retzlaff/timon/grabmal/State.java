@@ -2,17 +2,7 @@ package cc.retzlaff.timon.grabmal;
 
 import java.util.Objects;
 
-public record State(Gate[] gates, int time, int position) {
-    public State(final Gate[] gates, final int time, final int position) {
-        this.time = time;
-        this.position = position;
-        this.gates = new Gate[gates.length];
-        for (int i = 0; i < gates.length; i++) {
-            final Gate gate = gates[i];
-            final boolean open = (time / gate.period & 1) == 1;
-            this.gates[i] = new Gate(gate.period, open);
-        }
-    }
+public record State(int time, int position) {
 
     @Override
     public boolean equals(final Object o) {
