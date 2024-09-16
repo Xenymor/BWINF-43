@@ -13,8 +13,8 @@ public class Main {
 
     private static String pathToString(final List<State> states) {
         StringBuilder stringBuilder = new StringBuilder();
-        final String moveString = "Laufe in den Abschnitt";
-        final String waitString = "Warte für";
+        final String moveString = "Laufe in den Abschnitt ";
+        final String waitString = "Warte für ";
         if (states.size() > 1) {
             boolean waiting = false;
             int count = 0;
@@ -24,14 +24,14 @@ public class Main {
                 if (state.time() != last.time()) {
                     if (!waiting) {
                         if (last.position() != -1) {
-                            stringBuilder.append(moveString).append(" ").append(last.position() + 1).append("; ");
+                            stringBuilder.append(moveString).append(last.position() + 1).append("; ");
                         }
                         waiting = true;
                     }
                     count += state.time() - last.time();
                 } else if (state.position() != last.position()) {
                     if (waiting) {
-                        stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+                        stringBuilder.append(waitString).append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
                         waiting = false;
                         count = 0;
                     }
@@ -39,15 +39,15 @@ public class Main {
                 last = state;
             }
             if (count != 0) {
-                stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+                stringBuilder.append(waitString).append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
             }
         }
         String result = stringBuilder.toString();
         final String finishString = "Laufe zum Grabmal";
-        if (!result.matches("(?s).*" + moveString + " [0123456789]+; $")) {
+        if (!result.matches("(?s).*" + moveString + "[0123456789]+; $")) {
             result += finishString;
         } else {
-            result = result.replaceAll(moveString + " [0123456789]+; $", finishString);
+            result = result.replaceAll(moveString + "[0123456789]+; $", finishString);
         }
         return result;
     }
