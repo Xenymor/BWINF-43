@@ -9,12 +9,10 @@ import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
 public class Main {
     public static void main(String[] args) throws Exception {
         String[] inputLines = """
+                3
                 5
-                17
-                13
-                7
-                9
-                13""".split("\n");
+                8
+                12""".split("\n");
         Gate[] gates = parseGates(inputLines);
         Path path = findPath(gates);
         System.out.println(path);
@@ -61,21 +59,15 @@ public class Main {
     }
 
     private static Path getPath(final State targetState, final Map<State, State> previous) throws UnexpectedException {
-        List<Move> moves = new ArrayList<>();
+        List<State> states = new ArrayList<>();
         State curr = targetState;
         while (previous.containsKey(curr)) {
             State next = previous.get(curr);
-            if (next.position() != curr.position()) {
-                moves.add(new Move(MOVE, curr.position() - next.position()));
-            } else if (next.time() != curr.time()) {
-                moves.add(new Move(WAIT, curr.time() - next.time()));
-            } else {
-                throw new UnexpectedException("???");
-            }
+            states.add(next);
             curr = next;
         }
-        Collections.reverse(moves);
-        return new Path(moves);
+        Collections.reverse(states);
+        return new Path(states);
     }
 
     private static void addState(final List<State> toCheck, final State futureState) {
@@ -145,7 +137,7 @@ public class Main {
             if (timeSpan > timeUntilNextGateOpen) {
                 timeSpan -= timeUntilNextGateOpen;
                 currTime += timeUntilNextGateOpen;
-                result.add(new Move(WAIT, currTime-time));
+                result.add(new Move(WAIT, currTime - time));
 
                 final int timeUntilNextGateClosed = getTimeUntil(neighbouringGate, false, currTime);
                 timeSpan -= timeUntilNextGateClosed;
