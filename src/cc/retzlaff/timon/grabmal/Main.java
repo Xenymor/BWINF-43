@@ -8,13 +8,54 @@ public class Main {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
         long start = System.nanoTime();
-        Path path = findPath(gates);
+        List<State> states = findPath(gates);
         long finish = System.nanoTime();
-        System.out.println(path);
-        System.out.println((finish - start) / 1_000_000.0);
+        System.out.println(pathToString(states));
+        System.out.println("Rechenzeit: " + ((finish - start) / 1_000_000.0) + "ms");
     }
 
-    private static Path findPath(final Gate[] gates) throws Exception {
+    private static String pathToString(final List<State> states) {
+        StringBuilder stringBuilder = new StringBuilder();
+        final String moveString = "Laufe in den Abschnitt";
+        final String waitString = "Warte für";
+        if (states.size() > 1) {
+            boolean waiting = false;
+            int count = 0;
+            State last = states.get(0);
+            for (int i = 1; i < states.size(); i++) {
+                final State state = states.get(i);
+                if (state.time() != last.time()) {
+                    if (!waiting) {
+                        if (last.position() != -1) {
+                            stringBuilder.append(moveString).append(" ").append(last.position() + 1).append("; ");
+                        }
+                        waiting = true;
+                    }
+                    count += state.time() - last.time();
+                } else if (state.position() != last.position()) {
+                    if (waiting) {
+                        stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+                        waiting = false;
+                        count = 0;
+                    }
+                }
+                last = state;
+            }
+            if (count != 0) {
+                stringBuilder.append(waitString).append(" ").append(count).append(" ").append(count == 1 ? "Minute; " : "Minuten; ");
+            }
+        }
+        String result = stringBuilder.toString();
+        final String finishString = "Laufe zum Grabmal";
+        if (!result.matches("(?s).*" + moveString + " [0123456789]+; $")) {
+            result += finishString;
+        } else {
+            result = result.replaceAll(moveString + " [0123456789]+; $", finishString);
+        }
+        return result;
+    }
+
+    private static List<State> findPath(final Gate[] gates) throws Exception {
         Map<State, State> previous = new HashMap<>();
         List<State> toCheck = new ArrayList<>();
         State state = new State(0, -1);
@@ -53,7 +94,7 @@ public class Main {
         return gate.isOpen(time) == isOpen ? 0 : gate.getPeriod() - (time % gate.getPeriod());
     }
 
-    private static Path getPath(final State targetState, final Map<State, State> previous) {
+    private static List<State> getPath(final State targetState, final Map<State, State> previous) {
         List<State> states = new ArrayList<>();
         State curr = targetState;
         while (previous.containsKey(curr)) {
@@ -62,7 +103,7 @@ public class Main {
             curr = next;
         }
         Collections.reverse(states);
-        return new Path(states);
+        return states;
     }
 
     private static void addState(final List<State> toCheck, final State futureState) {
