@@ -3,9 +3,6 @@ package cc.retzlaff.timon.grabmal;
 import java.nio.file.Files;
 import java.util.*;
 
-import static cc.retzlaff.timon.grabmal.MoveType.MOVE;
-import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
-
 public class Main {
     public static void main(String[] args) throws Exception {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
@@ -28,11 +25,10 @@ public class Main {
             if (state.time() == 27 && state.position() == 3) {
                 System.out.println();
             }
-            List<Move> allMoves = getAllMoves(state, gates);
-            for (Move move : allMoves) {
-                State futureState = getState(state, move);
-                if (move.direction().equals(WAIT) && futureState.position() >= 0) {
-                    if (move.number() >= getTimeUntil(gates[state.position()], false, state.time())) {
+            List<State> allFutureStates = getAllMoves(state, gates);
+            for (State futureState : allFutureStates) {
+                if ((state.time() != futureState.time()) && futureState.position() >= 0) {
+                    if ((futureState.time() - state.time()) >= getTimeUntil(gates[state.position()], false, state.time())) {
                         continue;
                     }
                 }
@@ -79,55 +75,43 @@ public class Main {
         toCheck.add(futureState);
     }
 
-    private static State getState(final State state, final Move move) {
-        switch (move.direction()) {
-            case WAIT -> {
-                return new State(state.time() + move.number(), state.position());
-            }
-            case MOVE -> {
-                return new State(state.time(), state.position() + move.number());
-            }
-            default -> throw new IllegalArgumentException("The move direction " + move.direction() + " was not expected");
-        }
-    }
-
-    private static List<Move> getAllMoves(final State state, final Gate[] gates) {
-        List<Move> result = new ArrayList<>();
+    private static List<State> getAllMoves(final State state, final Gate[] gates) {
+        List<State> result = new ArrayList<>();
         final int stateTime = state.time();
 
-        int position = state.position();
+        final int position = state.position();
         if (position > -1 && !gates[position].isOpen(stateTime)) {
             return result;
         }
         if (position == -1) {
             final Gate gate = gates[0];
             if (!gate.isOpen(stateTime)) {
-                result.add(new Move(WAIT, getTimeUntil(gate, true, stateTime)));
+                result.add(new State(stateTime + getTimeUntil(gate, true, stateTime), position));
                 return result;
             } else {
                 final int dt1 = getTimeUntil(gate, false, stateTime);
                 final int time = stateTime + dt1;
-                result.add(new Move(WAIT, getTimeUntil(gate, true, time) + dt1));
+                result.add(new State(stateTime + getTimeUntil(gate, true, time) + dt1, position));
             }
         } else {
-            getWaitingMovesFor(gates[position], gates[position + 1], stateTime, result);
+            addWaitingMovesFor(gates[position], gates[position + 1], stateTime, position, result);
             if (position > 0) {
-                getWaitingMovesFor(gates[position], gates[position - 1], stateTime, result);
+                addWaitingMovesFor(gates[position], gates[position - 1], stateTime, position, result);
             }
         }
 
         if (gates[position + 1].isOpen(stateTime)) {
-            result.add(new Move(MOVE, 1));
+            result.add(new State(stateTime, position + 1));
         }
         if (position > 0) {
             if (gates[position - 1].isOpen(stateTime)) {
-                result.add(new Move(MOVE, -1));
+                result.add(new State(stateTime, position - 1));
             }
         }
         return result;
     }
 
-    private static void getWaitingMovesFor(final Gate currGate, final Gate neighbouringGate, final int time, final List<Move> result) {
+    private static void addWaitingMovesFor(final Gate currGate, final Gate neighbouringGate, final int time, final int position, final List<State> result) {
         int currTime = time;
         int timeSpan = getTimeUntil(currGate, false, currTime);
         while (timeSpan > 0) {
@@ -135,7 +119,7 @@ public class Main {
             if (timeSpan > timeUntilNextGateOpen) {
                 timeSpan -= timeUntilNextGateOpen;
                 currTime += timeUntilNextGateOpen;
-                result.add(new Move(WAIT, currTime - time));
+                result.add(new State(currTime, position));
 
                 final int timeUntilNextGateClosed = getTimeUntil(neighbouringGate, false, currTime);
                 timeSpan -= timeUntilNextGateClosed;
