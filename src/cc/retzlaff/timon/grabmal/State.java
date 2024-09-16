@@ -9,8 +9,7 @@ public record State(Gate[] gates, int time, int position) {
         this.gates = new Gate[gates.length];
         for (int i = 0; i < gates.length; i++) {
             final Gate gate = gates[i];
-            final boolean open = (time / gate.period & 1) == 1;
-            this.gates[i] = new Gate(gate.period, open);
+            this.gates[i] = new Gate(gate.period);
         }
     }
 

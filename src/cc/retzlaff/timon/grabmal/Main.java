@@ -10,8 +10,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
+        long start = System.nanoTime();
         Path path = findPath(gates);
+        long finish = System.nanoTime();
         System.out.println(path);
+        System.out.println((finish - start) / 1_000_000.0);
     }
 
     private static Path findPath(final Gate[] gates) throws Exception {
@@ -51,7 +54,7 @@ public class Main {
     }
 
     private static int getTimeUntil(final Gate gate, final boolean isOpen, final int time) {
-        return gate.open == isOpen ? 0 : gate.period - (time % gate.period);
+        return gate.isOpen(time) == isOpen ? 0 : gate.period - (time % gate.period);
     }
 
     private static Path getPath(final State targetState, final Map<State, State> previous) {
@@ -90,16 +93,16 @@ public class Main {
 
     private static List<Move> getAllMoves(final State state) {
         List<Move> result = new ArrayList<>();
+        final int stateTime = state.time();
 
         int position = state.position();
         final Gate[] gates = state.gates();
-        if (position > -1 && !gates[position].open) {
+        if (position > -1 && !gates[position].isOpen(stateTime)) {
             return result;
         }
-        final int stateTime = state.time();
         if (position == -1) {
             final Gate gate = gates[0];
-            if (!gate.open) {
+            if (!gate.isOpen(stateTime)) {
                 result.add(new Move(WAIT, getTimeUntil(gate, true, stateTime)));
                 return result;
             } else {
@@ -114,11 +117,11 @@ public class Main {
             }
         }
 
-        if (gates[position + 1].open) {
+        if (gates[position + 1].isOpen(stateTime)) {
             result.add(new Move(MOVE, 1));
         }
         if (position > 0) {
-            if (gates[position - 1].open) {
+            if (gates[position - 1].isOpen(stateTime)) {
                 result.add(new Move(MOVE, -1));
             }
         }
