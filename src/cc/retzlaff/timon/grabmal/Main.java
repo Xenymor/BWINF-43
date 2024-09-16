@@ -1,6 +1,6 @@
 package cc.retzlaff.timon.grabmal;
 
-import java.rmi.UnexpectedException;
+import java.nio.file.Files;
 import java.util.*;
 
 import static cc.retzlaff.timon.grabmal.MoveType.MOVE;
@@ -8,13 +8,7 @@ import static cc.retzlaff.timon.grabmal.MoveType.WAIT;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String[] inputLines = """
-                5
-                17
-                13
-                7
-                9
-                13""".split("\n");
+        List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
         Path path = findPath(gates);
         System.out.println(path);
@@ -60,7 +54,7 @@ public class Main {
         return gate.open == isOpen ? 0 : gate.period - (time % gate.period);
     }
 
-    private static Path getPath(final State targetState, final Map<State, State> previous) throws UnexpectedException {
+    private static Path getPath(final State targetState, final Map<State, State> previous) {
         List<State> states = new ArrayList<>();
         State curr = targetState;
         while (previous.containsKey(curr)) {
@@ -150,33 +144,10 @@ public class Main {
         }
     }
 
-    private static int getTimeUntilLastOpen(final State state, final int position) {
-        Gate[] gates = state.gates();
-        for (int i = position - 1; i >= 0; i--) {
-            final Gate gate = gates[i];
-            if (!gate.open) {
-                return getTimeUntil(gate, true, state.time());
-            }
-        }
-        return Integer.MAX_VALUE;
-    }
-
-    private static int getTimeUntilNextOpen(final State state, final int position) {
-        Gate[] gates = state.gates();
-        for (int i = position + 1; i < gates.length; i++) {
-            final Gate gate = gates[i];
-            if (!gate.open) {
-                return getTimeUntil(gate, true, state.time());
-            }
-        }
-        System.out.println("Unnecessary call");
-        return Integer.MAX_VALUE;
-    }
-
-    private static Gate[] parseGates(final String[] input) {
-        Gate[] result = new Gate[Integer.parseInt(input[0])];
+    private static Gate[] parseGates(final List<String> input) {
+        Gate[] result = new Gate[Integer.parseInt(input.get(0))];
         for (int i = 0; i < result.length; i++) {
-            result[i] = new Gate(Integer.parseInt(input[i + 1]));
+            result[i] = new Gate(Integer.parseInt(input.get(i + 1)));
         }
         return result;
     }
