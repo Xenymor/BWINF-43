@@ -54,7 +54,7 @@ public class Main {
     }
 
     private static int getTimeUntil(final Gate gate, final boolean isOpen, final int time) {
-        return gate.isOpen(time) == isOpen ? 0 : gate.period - (time % gate.period);
+        return gate.isOpen(time) == isOpen ? 0 : gate.getPeriod() - (time % gate.getPeriod());
     }
 
     private static Path getPath(final State targetState, final Map<State, State> previous) {

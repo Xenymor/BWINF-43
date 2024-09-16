@@ -3,15 +3,6 @@ package cc.retzlaff.timon.grabmal;
 import java.util.Objects;
 
 public record State(Gate[] gates, int time, int position) {
-    public State(final Gate[] gates, final int time, final int position) {
-        this.time = time;
-        this.position = position;
-        this.gates = new Gate[gates.length];
-        for (int i = 0; i < gates.length; i++) {
-            final Gate gate = gates[i];
-            this.gates[i] = new Gate(gate.period);
-        }
-    }
 
     @Override
     public boolean equals(final Object o) {
