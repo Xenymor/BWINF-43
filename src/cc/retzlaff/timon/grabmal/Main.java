@@ -7,11 +7,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
-        long start = System.nanoTime();
         List<State> states = findPath(gates);
-        long finish = System.nanoTime();
         System.out.println(pathToString(states));
-        System.out.println("Rechenzeit: " + ((finish - start) / 1_000_000.0) + "ms");
     }
 
     private static String pathToString(final List<State> states) {
