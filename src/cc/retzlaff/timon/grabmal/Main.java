@@ -60,27 +60,26 @@ public class Main {
         do {
             state = toCheck.get(0);
             toCheck.remove(0);
-            if (state.time() == 27 && state.position() == 3) {
-                System.out.println();
-            }
-            List<State> allFutureStates = getAllMoves(state, gates);
-            for (State futureState : allFutureStates) {
-                if ((state.time() != futureState.time()) && futureState.position() >= 0) {
-                    if ((futureState.time() - state.time()) >= getTimeUntil(gates[state.position()], false, state.time())) {
+            List<State> allChildStates = getAllChildStates(state, gates);
+            for (State childState : allChildStates) {
+                final boolean isWaitingMove = state.time() != childState.time();
+                if (isWaitingMove && childState.position() >= 0) {
+                    if ((childState.time() - state.time()) >= getTimeUntil(gates[state.position()], false, state.time())) {
+                        // I did die here!
                         continue;
                     }
                 }
-                if (previous.containsKey(futureState)) {
-                    final State state1 = previous.get(futureState);
+                if (previous.containsKey(childState)) {
+                    final State state1 = previous.get(childState);
                     if (state.time() < state1.time()) {
-                        previous.put(futureState, state);
+                        previous.put(childState, state);
                     }
                 } else {
-                    previous.put(futureState, state);
-                    addState(toCheck, futureState);
+                    previous.put(childState, state);
+                    addState(toCheck, childState);
                 }
-                if (futureState.position() == gates.length - 1) {
-                    return getPath(futureState, previous);
+                if (childState.position() == gates.length - 1) {
+                    return getPath(childState, previous);
                 }
             }
         } while (state.position() < gates.length);
@@ -91,13 +90,13 @@ public class Main {
         return gate.isOpen(time) == isOpen ? 0 : gate.getPeriod() - (time % gate.getPeriod());
     }
 
-    private static List<State> getPath(final State targetState, final Map<State, State> previous) {
+    private static List<State> getPath(final State targetState, final Map<State, State> currToPredecessor) {
         List<State> states = new ArrayList<>();
         State curr = targetState;
-        while (previous.containsKey(curr)) {
-            State next = previous.get(curr);
-            states.add(next);
-            curr = next;
+        while (currToPredecessor.containsKey(curr)) {
+            State previous = currToPredecessor.get(curr);
+            states.add(previous);
+            curr = previous;
         }
         Collections.reverse(states);
         return states;
@@ -113,23 +112,22 @@ public class Main {
         toCheck.add(futureState);
     }
 
-    private static List<State> getAllMoves(final State state, final Gate[] gates) {
-        List<State> result = new ArrayList<>();
+    private static List<State> getAllChildStates(final State state, final Gate[] gates) {
         final int stateTime = state.time();
 
         final int position = state.position();
         if (position > -1 && !gates[position].isOpen(stateTime)) {
-            return result;
+            return Collections.emptyList();
         }
+        List<State> result = new ArrayList<>();
         if (position == -1) {
             final Gate gate = gates[0];
             if (!gate.isOpen(stateTime)) {
-                result.add(new State(stateTime + getTimeUntil(gate, true, stateTime), position));
-                return result;
+                return Collections.singletonList(new State(stateTime + getTimeUntil(gate, true, stateTime), position));
             } else {
                 final int dt1 = getTimeUntil(gate, false, stateTime);
                 final int time = stateTime + dt1;
-                result.add(new State(stateTime + getTimeUntil(gate, true, time) + dt1, position));
+                result.add(new State(time + getTimeUntil(gate, true, time), position));
             }
         } else {
             addWaitingMovesFor(gates[position], gates[position + 1], stateTime, position, result);

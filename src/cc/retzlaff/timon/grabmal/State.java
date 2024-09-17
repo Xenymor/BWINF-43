@@ -16,4 +16,5 @@ public record State(int time, int position) {
     public int hashCode() {
         return Objects.hash(time, position);
     }
+
 }
