@@ -8,29 +8,10 @@ import java.nio.file.Path;
 
 public class Main {
     private static final int STEP_COUNT = 10_000;
-    public static final int TRY_COUNT = 20;
 
-    //Expected output: x1=11.2736;x2=238.943;angle:25.975357705716817°
-    //Time: 4268.80465+/-111.57005ms; avg.: 4264.71221ms
     public static void main(String[] args) throws IOException {
         java.util.List<String> testInputLines = Files.readAllLines(Path.of(args[0]));
-        Shot shot = null;
-        long min = Long.MAX_VALUE;
-        long max = Long.MIN_VALUE;
-        long sum = 0;
-        for (int i = 0; i < TRY_COUNT; i++) {
-            long start = System.nanoTime();
-            shot = findShot(testInputLines);
-            long end = System.nanoTime();
-            long time = end - start;
-            min = Math.min(time, min);
-            max = Math.max(time, max);
-            sum += time;
-        }
-        double avg = (sum / ((double) TRY_COUNT)) / 1_000_000;
-        double mean = (min + max) / 2_000_000d;
-        double deviation = (max - min) / 2_000_000d;
-        System.out.println("Time: " + mean + "+/-" + deviation + "ms; avg.: " + avg + "ms");
+        Shot shot = findShot(testInputLines);
         System.out.println(shot);
         String[] numbers = testInputLines.get(0).split(" ");
         int radius = Integer.parseInt(numbers[1]);
