@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+    public static final String ALARM_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
     static Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
     static Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
     static Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
-
+    final static AudioFilePlayer player = new AudioFilePlayer();
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -26,6 +27,7 @@ public class Main {
         frame.setVisible(true);
         String oldText = null;
         final Highlighter highlighter = textPane.getHighlighter();
+        boolean playSound = true;
         while (true) {
             try {
                 Thread.sleep(20);
@@ -42,17 +44,22 @@ public class Main {
                 for (int i = 0; i < inputChars.length; i++) {
                     final char currChar = inputChars[i];
                     if (Character.isAlphabetic(currChar)) {
+                        System.out.print(currChar);
                         formattedTextBuilder.append(currChar);
                         originalIndex.add(i);
                     }
                 }
                 String formattedText = formattedTextBuilder.toString();
-                System.out.println(formattedText);
                 List<Integer> positions1 = getPositions(formattedText, 0);
                 List<Integer> positions2 = getPositions(formattedText, 1);
                 final boolean isHopsiText = (positions1.isEmpty() || positions2.isEmpty()) || (!(positions1.get(positions1.size() - 1).equals(positions2.get(positions2.size() - 1))));
-                System.out.println(isHopsiText ? "Dies ist ein Hopsitext" : "Dies ist kein Hopsitext");
-                if (!isHopsiText) {
+                if (isHopsiText) {
+                    playSound = true;
+                } else {
+                    if (playSound) {
+                        new Thread(()-> player.play(ALARM_PATH)).start();
+                        playSound = false;
+                    }
                     for (int i = 0; i < positions1.size(); i++) {
                         final Integer position = positions1.get(i);
                         if (positions2.contains(position)) {
@@ -60,19 +67,17 @@ public class Main {
                             int ogLastPos1 = -1;
                             int ogLastPos2 = -1;
                             try {
-                                ogLastPos1 = originalIndex.get(positions1.get(i - 1));
+                                ogLastPos1 = originalIndex.get(positions1.get(i-1));
                                 ogLastPos2 = originalIndex.get(positions2.get(positions2.indexOf(position) - 1));
-                                System.out.println("The guys collide at " + ogPosition + " after jumping from " + ogLastPos1 + " and " + ogLastPos2);
                             } catch (IndexOutOfBoundsException a) {
-                                System.out.println("The guys collide at " + ogPosition);
                             }
                             try {
-                                highlighter.addHighlight(ogPosition, ogPosition + 1, redPainter);
+                                highlighter.addHighlight(ogPosition-1, ogPosition, redPainter);
                                 if (ogLastPos1 > -1) {
-                                    highlighter.addHighlight(ogLastPos1, ogLastPos1 + 1, bluePainter);
+                                    highlighter.addHighlight(ogLastPos1-1, ogLastPos1, bluePainter);
                                 }
                                 if (ogLastPos2 > -1) {
-                                    highlighter.addHighlight(ogLastPos2, ogLastPos2 + 1, greenPainter);
+                                    highlighter.addHighlight(ogLastPos2-1, ogLastPos2, greenPainter);
                                 }
                             } catch (BadLocationException e) {
                                 e.printStackTrace();
@@ -97,6 +102,9 @@ public class Main {
     }
 
     private static int getValue(final char letter) {
+        if (letter == 'r') {
+            System.out.println();
+        }
         if (letter < 128) {
             return letter - 96;
         } else {
