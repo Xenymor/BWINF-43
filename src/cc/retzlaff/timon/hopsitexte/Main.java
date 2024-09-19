@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+    //TODO change alarm sound
     public static final String ALARM_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
     static Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
     static Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
@@ -69,7 +70,7 @@ public class Main {
                             try {
                                 ogLastPos1 = originalIndex.get(positions1.get(i-1));
                                 ogLastPos2 = originalIndex.get(positions2.get(positions2.indexOf(position) - 1));
-                            } catch (IndexOutOfBoundsException a) {
+                            } catch (IndexOutOfBoundsException ignored) {
                             }
                             try {
                                 highlighter.addHighlight(ogPosition-1, ogPosition, redPainter);
@@ -126,6 +127,4 @@ public class Main {
         }
     }
 
-    private static class MyArea extends TextArea {
-    }
 }
