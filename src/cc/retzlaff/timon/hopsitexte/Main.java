@@ -24,6 +24,16 @@ public class Main {
     static Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
     final static AudioFilePlayer player = new AudioFilePlayer();
     final static Map<String, List<String>> synonyms = new HashMap<>();
+    private static JDialog popUp1;
+    private static JDialog popUp2;
+    private static int length2;
+    private static int length1;
+    private static AtomicReference<String> choice1;
+    private static AtomicInteger position1;
+    private static AtomicBoolean isDialog1Open;
+    private static AtomicReference<String> choice2;
+    private static AtomicInteger position2;
+    private static AtomicBoolean isDialog2Open;
 
     public static void main(String[] args) throws IOException {
         readSynonyms();
@@ -39,39 +49,24 @@ public class Main {
         String oldText = null;
         final Highlighter highlighter = textPane.getHighlighter();
         boolean playSound = true;
-        final AtomicReference<String> choice1 = new AtomicReference<>("");
-        final AtomicInteger position1 = new AtomicInteger(-1);
-        int length1 = -1;
-        final AtomicBoolean isDialog1Open = new AtomicBoolean(false);
-        AtomicReference<String> choice2 = new AtomicReference<>("");
-        AtomicInteger position2 = new AtomicInteger(-1);
-        int length2 = -1;
-        final AtomicBoolean isDialog2Open = new AtomicBoolean(false);
+        choice1 = new AtomicReference<>("");
+        position1 = new AtomicInteger(-1);
+        length1 = -1;
+        popUp1 = null;
+        isDialog1Open = new AtomicBoolean(false);
+        choice2 = new AtomicReference<>("");
+        position2 = new AtomicInteger(-1);
+        length2 = -1;
+        popUp2 = null;
+        isDialog2Open = new AtomicBoolean(false);
         while (true) {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String text = textPane.getText();
-            int position = position1.get();
-            String choice = choice1.get();
-            if (position > -1 && !choice.isEmpty()) {
-                text = text.substring(0, position) + choice + text.substring(position + length1);
-                textPane.setText(text);
-                position1.set(-1);
-                choice1.set("");
-                isDialog1Open.set(false);
-            }
-            position = position2.get();
-            choice = choice2.get();
-            if (position > -1 && !choice.isEmpty()) {
-                text = text.substring(0, position) + choice + text.substring(position + length2);
-                textPane.setText(text);
-                position2.set(-1);
-                choice2.set("");
-                isDialog2Open.set(false);
-            }
+            setText(textPane, position1, choice1, popUp1);
+            String text = setText(textPane, position2, choice2, popUp2);
             if (!text.equals(oldText)) {
                 highlighter.removeAllHighlights();
                 oldText = text;
@@ -112,10 +107,14 @@ public class Main {
                                 if (ogLastPos1 > -1) {
                                     if (!isDialog1Open.get()) {
                                         ValuePosition valuePosition = getWord(ogLastPos1, text);
+                                        assert valuePosition != null;
                                         length1 = valuePosition.value.length();
                                         position1.set(valuePosition.position);
                                         if (synonyms.containsKey(valuePosition.value)) {
-                                            openSynonymsWindow(choice1, position1, valuePosition, textPane, isDialog1Open);
+                                            if (popUp1 != null) {
+                                                popUp1.dispose();
+                                            }
+                                            popUp1 = openSynonymsWindow(choice1, position1, valuePosition, textPane, isDialog1Open);
                                             isDialog1Open.set(true);
                                         }
                                     }
@@ -124,11 +123,15 @@ public class Main {
                                 if (ogLastPos2 > -1) {
                                     if (!isDialog2Open.get()) {
                                         ValuePosition valuePosition = getWord(ogLastPos2, text);
+                                        assert valuePosition != null;
                                         if (position1.get() != valuePosition.position) {
                                             length2 = valuePosition.value.length();
                                             position2.set(valuePosition.position);
                                             if (synonyms.containsKey(valuePosition.value)) {
-                                                openSynonymsWindow(choice2, position2, valuePosition, textPane, isDialog2Open);
+                                                if (popUp2 != null) {
+                                                    popUp2.dispose();
+                                                }
+                                                popUp2 = openSynonymsWindow(choice2, position2, valuePosition, textPane, isDialog2Open);
                                                 isDialog2Open.set(true);
                                             }
                                         }
@@ -146,7 +149,58 @@ public class Main {
         }
     }
 
-    private static void openSynonymsWindow(final AtomicReference<String> choiceOutput, final AtomicInteger positionOutput, final ValuePosition valuePosition, final JTextPane textPane, final AtomicBoolean isDialogOpen) throws BadLocationException {
+    private static String setText(final JTextPane textPane, final AtomicInteger atomicPosition, final AtomicReference<String> atomicChoice, JDialog popUp) {
+        String text = textPane.getText();
+        int position = atomicPosition.get();
+        String choice = atomicChoice.get();
+        if (position > -1 && !choice.isEmpty()) {
+            text = text.substring(0, position) + choice + text.substring(position + length1);
+            textPane.setText(text);
+            atomicPosition.set(-1);
+            atomicChoice.set("");
+            isDialog1Open.set(false);
+            isDialog2Open.set(false);
+            if (popUp == popUp1) {
+                if (popUp2 != null) {
+                    popUp2.dispose();
+                    popUp2 = null;
+                }
+                popUp1 = null;
+            } else if (popUp == popUp2) {
+                if (popUp1 != null) {
+                    popUp1.dispose();
+                    popUp1 = null;
+                }
+                popUp2 = null;
+            }
+        }
+        return text;
+    }
+
+    private static int getXOverlapSize(final int x1, final int width1, final int x2, final int width2) {
+        if (x1 < x2) {
+            return x1 + width1 - x2;
+        } else {
+            return x2 + width2 - x1;
+        }
+    }
+
+    static boolean valueInRange(int value, int min, int max) {
+        return (value >= min) && (value <= max);
+    }
+
+    static boolean isOverlapping(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2) {
+        boolean isOverlappingX = valueInRange(x1, x2, x2 + width2) ||
+                valueInRange(x2, x1, x1 + width1);
+
+        boolean isOverlappingY = valueInRange(y1, y2, y2 + height2) ||
+                valueInRange(y2, y1, y1 + height1);
+
+        return isOverlappingX && isOverlappingY;
+    }
+
+    private static JDialog openSynonymsWindow(final AtomicReference<String> choiceOutput, final AtomicInteger positionOutput, final ValuePosition valuePosition, final JTextPane textPane, final AtomicBoolean isDialogOpen) throws BadLocationException {
+        JDialog dialog = new JDialog();
         SwingUtilities.invokeLater(() -> {
             List<String> options = new ArrayList<>(synonyms.get(valuePosition.value));
             options.add("Close");
@@ -179,15 +233,36 @@ public class Main {
                 panel.add(button);
             }
 
-            JDialog dialog = new JDialog();
             final Point locationOnScreen = textPane.getLocationOnScreen();
+            assert startPos != null;
+            assert endPos != null;
             dialog.setLocation((int) (startPos.getX()) + locationOnScreen.x, (int) endPos.getMaxY() + 5 + locationOnScreen.y);
             dialog.setSize((int) (endPos.getMaxX() - startPos.getMinX()), dialog.getHeight());
             dialog.setContentPane(panel);
             dialog.setUndecorated(true);
             dialog.pack();
             dialog.setVisible(true);
+            if (popUp1 != null && popUp2 != null) {
+                if (popUp1.isVisible() && popUp2.isVisible()) {
+                    final Point pos1 = popUp1.getLocationOnScreen();
+                    final Point pos2 = popUp2.getLocationOnScreen();
+                    if (isOverlapping(pos1.x, pos1.y, popUp1.getWidth(), popUp1.getHeight(),
+                            pos2.x, pos2.y, popUp2.getWidth(), popUp2.getHeight())) {
+                        int overLapSize = (getXOverlapSize(pos1.x, popUp1.getWidth(), pos2.x, popUp2.getWidth()) + 10) / 2;
+                        if (pos1.x < pos2.x) {
+                            pos1.x -= overLapSize;
+                            pos2.x += overLapSize;
+                        } else {
+                            pos1.x += overLapSize;
+                            pos2.x -= overLapSize;
+                        }
+                        popUp1.setLocation(pos1);
+                        popUp2.setLocation(pos2);
+                    }
+                }
+            }
         });
+        return dialog;
     }
 
     private static ValuePosition getWord(final int position, final String text) {
@@ -209,7 +284,7 @@ public class Main {
         while (end < text.length()) {
             final char codePoint = text.charAt(end);
             if (!Character.isWhitespace(codePoint) && Character.isAlphabetic(codePoint)) {
-                end--;
+                end++;
             } else {
                 break;
             }
