@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Main {
     //TODO change alarm sound
     public static final String ALARM_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
+    //Taken of https://www.openthesaurus.de
     public static final String THESAURUS_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\synonyms.csv";
     static Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
     static Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
@@ -70,7 +71,7 @@ public class Main {
             if (!text.equals(oldText)) {
                 highlighter.removeAllHighlights();
                 oldText = text;
-                char[] inputChars = text.toLowerCase().toCharArray();
+                char[] inputChars = text.toLowerCase(Locale.GERMAN).toCharArray();
                 List<Integer> originalIndex = new ArrayList<>();
                 StringBuilder formattedTextBuilder = new StringBuilder();
                 for (int i = 0; i < inputChars.length; i++) {
@@ -93,17 +94,26 @@ public class Main {
                     }
                     for (int i = 0; i < positions1.size(); i++) {
                         final Integer currPos = positions1.get(i);
-                        if (positions2.contains(currPos)) {
+                        boolean containsPos = false;
+                        int otherIndex = -1;
+                        for (int j = 0; j < positions2.size(); j++) {
+                            if (positions2.get(j).equals(currPos)) {
+                                containsPos = true;
+                                otherIndex = j;
+                                break;
+                            }
+                        }
+                        if (containsPos) {
                             int ogPosition = originalIndex.get(currPos);
                             int ogLastPos1 = -1;
                             int ogLastPos2 = -1;
                             try {
                                 ogLastPos1 = originalIndex.get(positions1.get(i - 1));
-                                ogLastPos2 = originalIndex.get(positions2.get(positions2.indexOf(currPos) - 1));
+                                ogLastPos2 = originalIndex.get(positions2.get(otherIndex - 1));
                             } catch (IndexOutOfBoundsException ignored) {
                             }
                             try {
-                                highlighter.addHighlight(ogPosition - 1, ogPosition, redPainter);
+                                highlighter.addHighlight(ogPosition, ogPosition+1, redPainter);
                                 if (ogLastPos1 > -1) {
                                     if (!isDialog1Open.get()) {
                                         ValuePosition valuePosition = getWord(ogLastPos1, text);
@@ -118,7 +128,7 @@ public class Main {
                                             isDialog1Open.set(true);
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos1 - 1, ogLastPos1, bluePainter);
+                                    highlighter.addHighlight(ogLastPos1, ogLastPos1+1, bluePainter);
                                 }
                                 if (ogLastPos2 > -1) {
                                     if (!isDialog2Open.get()) {
@@ -136,7 +146,7 @@ public class Main {
                                             }
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos2 - 1, ogLastPos2, greenPainter);
+                                    highlighter.addHighlight(ogLastPos2, ogLastPos2+1, greenPainter);
                                 }
                             } catch (BadLocationException e) {
                                 e.printStackTrace();
@@ -153,20 +163,21 @@ public class Main {
         String text = textPane.getText();
         int position = atomicPosition.get();
         String choice = atomicChoice.get();
+        final boolean is1 = popUp == popUp1;
         if (position > -1 && !choice.isEmpty()) {
-            text = text.substring(0, position) + choice + text.substring(position + length1);
+            text = text.substring(0, position) + choice + text.substring(position + (is1 ? length1 : length2));
             textPane.setText(text);
             atomicPosition.set(-1);
             atomicChoice.set("");
             isDialog1Open.set(false);
             isDialog2Open.set(false);
-            if (popUp == popUp1) {
+            if (is1) {
                 if (popUp2 != null) {
                     popUp2.dispose();
                     popUp2 = null;
                 }
                 popUp1 = null;
-            } else if (popUp == popUp2) {
+            } else {
                 if (popUp1 != null) {
                     popUp1.dispose();
                     popUp1 = null;
