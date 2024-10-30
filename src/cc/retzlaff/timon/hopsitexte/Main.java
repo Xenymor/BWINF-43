@@ -16,24 +16,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
-    //TODO change alarm sound
+    //TODO change path
     public static final String ALARM_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
     //Taken of https://www.openthesaurus.de
     public static final String THESAURUS_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\synonyms.csv";
-    static Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
-    static Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
-    static Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
+    static final Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
+    static final Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
+    static final Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
     final static AudioFilePlayer player = new AudioFilePlayer();
     final static Map<String, List<String>> synonyms = new HashMap<>();
     private static JDialog popUp1;
     private static JDialog popUp2;
     private static int length2;
     private static int length1;
-    private static AtomicReference<String> choice1;
-    private static AtomicInteger position1;
     private static AtomicBoolean isDialog1Open;
-    private static AtomicReference<String> choice2;
-    private static AtomicInteger position2;
     private static AtomicBoolean isDialog2Open;
 
     public static void main(String[] args) throws IOException {
@@ -50,17 +46,17 @@ public class Main {
         String oldText = null;
         final Highlighter highlighter = textPane.getHighlighter();
         boolean playSound = true;
-        choice1 = new AtomicReference<>("");
-        position1 = new AtomicInteger(-1);
+        AtomicReference<String> choice1 = new AtomicReference<>("");
+        AtomicInteger position1 = new AtomicInteger(-1);
         length1 = -1;
         popUp1 = null;
         isDialog1Open = new AtomicBoolean(false);
-        choice2 = new AtomicReference<>("");
-        position2 = new AtomicInteger(-1);
+        AtomicReference<String> choice2 = new AtomicReference<>("");
+        AtomicInteger position2 = new AtomicInteger(-1);
         length2 = -1;
         popUp2 = null;
         isDialog2Open = new AtomicBoolean(false);
-        while (true) {
+        while (frame.isVisible()) {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
@@ -113,7 +109,7 @@ public class Main {
                             } catch (IndexOutOfBoundsException ignored) {
                             }
                             try {
-                                highlighter.addHighlight(ogPosition, ogPosition+1, redPainter);
+                                highlighter.addHighlight(ogPosition, ogPosition + 1, redPainter);
                                 if (ogLastPos1 > -1) {
                                     if (!isDialog1Open.get()) {
                                         ValuePosition valuePosition = getWord(ogLastPos1, text);
@@ -128,7 +124,7 @@ public class Main {
                                             isDialog1Open.set(true);
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos1, ogLastPos1+1, bluePainter);
+                                    highlighter.addHighlight(ogLastPos1, ogLastPos1 + 1, bluePainter);
                                 }
                                 if (ogLastPos2 > -1) {
                                     if (!isDialog2Open.get()) {
@@ -146,7 +142,7 @@ public class Main {
                                             }
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos2, ogLastPos2+1, greenPainter);
+                                    highlighter.addHighlight(ogLastPos2, ogLastPos2 + 1, greenPainter);
                                 }
                             } catch (BadLocationException e) {
                                 e.printStackTrace();
@@ -210,7 +206,7 @@ public class Main {
         return isOverlappingX && isOverlappingY;
     }
 
-    private static JDialog openSynonymsWindow(final AtomicReference<String> choiceOutput, final AtomicInteger positionOutput, final ValuePosition valuePosition, final JTextPane textPane, final AtomicBoolean isDialogOpen) throws BadLocationException {
+    private static JDialog openSynonymsWindow(final AtomicReference<String> choiceOutput, final AtomicInteger positionOutput, final ValuePosition valuePosition, final JTextPane textPane, final AtomicBoolean isDialogOpen) {
         JDialog dialog = new JDialog();
         SwingUtilities.invokeLater(() -> {
             List<String> options = new ArrayList<>(synonyms.get(valuePosition.value));
