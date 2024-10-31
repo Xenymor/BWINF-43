@@ -38,6 +38,7 @@ public class Main {
         int bestCount = -1;
         int[] bestIndices = new int[PATH_COUNT];
 
+        long start = System.nanoTime();
         while (indices[0] <= values.length - PATH_COUNT) {
             int currCount = getCount(indices, values, persons);
             if (currCount > bestCount) {
@@ -56,6 +57,7 @@ public class Main {
                 }
             }
         }
+        long end = System.nanoTime();
 
         StringBuilder solution = new StringBuilder();
         solution.append(bestCount).append(" people attend for the lengths: ");
@@ -64,6 +66,7 @@ public class Main {
         }
         solution.replace(solution.length() - 2, solution.length(), "");
         System.out.println(solution);
+        System.out.println("Found in " + (end-start)/1_000_000 + "ms");
     }
 
     private static int getCount(final int[] indices, final int[] values, final Person[] persons) {
