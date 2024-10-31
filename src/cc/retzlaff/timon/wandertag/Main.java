@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class Main {
@@ -31,8 +32,8 @@ public class Main {
             System.exit(0);
         }
 
-        Arrays.sort(values);
         values = removeDoubledValues(values);
+        Arrays.sort(values);
         int[] indices = new int[PATH_COUNT];
         for (int i = 0; i < indices.length; i++) {
             indices[i] = i;
@@ -72,19 +73,13 @@ public class Main {
     }
 
     public static int[] removeDoubledValues(int[] values) {
-        List<Integer> resultList = new ArrayList<>();
-        int i = 0;
+        HashSet<Integer> resultSet = new HashSet<>();
 
-        while (i < values.length) {
-            resultList.add(values[i]);
-
-            int current = values[i];
-            while (i < values.length && values[i] == current) {
-                i++;
-            }
+        for (int value : values) {
+            resultSet.add(value);
         }
 
-        return resultList.stream().mapToInt(Integer::intValue).toArray();
+        return resultSet.stream().mapToInt(Integer::intValue).toArray();
     }
 
     private static int getCount(final int[] indices, final int[] values, final Person[] persons) {
