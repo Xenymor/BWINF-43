@@ -3,6 +3,7 @@ package cc.retzlaff.timon.wandertag;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class Main {
         }
 
         Arrays.sort(values);
+        removeDoubledValues(values);
         int[] indices = new int[PATH_COUNT];
         for (int i = 0; i < indices.length; i++) {
             indices[i] = i;
@@ -66,7 +68,23 @@ public class Main {
         }
         solution.replace(solution.length() - 2, solution.length(), "");
         System.out.println(solution);
-        System.out.println("Found in " + (end-start)/1_000_000 + "ms");
+        System.out.println("Found in " + (end - start) / 1_000_000 + "ms");
+    }
+
+    public static int[] removeDoubledValues(int[] values) {
+        List<Integer> resultList = new ArrayList<>();
+        int i = 0;
+
+        while (i < values.length) {
+            resultList.add(values[i]);
+
+            int current = values[i];
+            while (i < values.length && values[i] == current) {
+                i++;
+            }
+        }
+
+        return resultList.stream().mapToInt(Integer::intValue).toArray();
     }
 
     private static int getCount(final int[] indices, final int[] values, final Person[] persons) {
