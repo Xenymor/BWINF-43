@@ -25,11 +25,24 @@ public class Main {
 
         values = removeDoubledValues(values);
         Arrays.sort(values);
-        int bestCount = 0;
+
+        int[][] countTable = new int[values.length][values.length];
+        initializeTable(countTable, values, persons);
+
+        int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
 
         long start = System.nanoTime();
         for (int i = 0; i < values.length - 2; i++) {
+            int localBest = 0;
+            for (int j = i + 1; j < values.length - 1; j++) {
+                for (int k = j + 1; k < values.length; k++) {
+                    localBest = Math.max(countTable[j][k], localBest);
+                }
+            }
+            if (getCount(values[i], persons)+localBest < bestCount) {
+                continue;
+            }
             for (int j = i + 1; j < values.length - 1; j++) {
                 for (int k = j + 1; k < values.length; k++) {
                     int currCount = getCount(values[i], values[j], values[k], persons);
@@ -45,6 +58,45 @@ public class Main {
         long end = System.nanoTime();
 
         printResult(bestCount, bestLengths, end - start);
+    }
+
+    private static int getCount(final int length1, final Person[] persons) {
+        int count = 0;
+        for (Person person : persons) {
+            if (isParticipating(person, length1)) {
+                count++;
+            }
+        }
+        return count;
+
+    }
+
+    private static boolean isParticipating(final Person person, final int length1) {
+        return isInRange(person, length1);
+    }
+
+    private static void initializeTable(final int[][] countTable, final int[] values, final Person[] persons) {
+        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < i; j++) {
+                int count = getCount(values[i], values[j], persons);
+                countTable[i][j] = count;
+                countTable[j][i] = count;
+            }
+        }
+    }
+
+    private static int getCount(final int length1, final int length2, final Person[] persons) {
+        int count = 0;
+        for (Person person : persons) {
+            if (isParticipating(person, length1, length2)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static boolean isParticipating(final Person person, final int length1, final int length2) {
+        return isInRange(person, length1) || isInRange(person, length2);
     }
 
     public static int[] removeDoubledValues(int[] values) {
