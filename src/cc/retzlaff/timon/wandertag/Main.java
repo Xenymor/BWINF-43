@@ -33,10 +33,14 @@ public class Main {
         int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
 
+        BitSet preComputed = new BitSet();
         for (int i = 0; i < values.length - 2; i++) {
             for (int j = i + 1; j < values.length - 1; j++) {
+                preComputed.clear();
+                preComputed.or(bitSets[i]);
+                preComputed.or(bitSets[j]);
                 for (int k = j + 1; k < values.length; k++) {
-                    int currCount = getCount(i, j, k, bitSets);
+                    int currCount = getCount(preComputed, k, bitSets);
                     if (currCount > bestCount) {
                         bestCount = currCount;
                         bestLengths[0] = values[i];
@@ -75,10 +79,9 @@ public class Main {
 
     static BitSet bitSet = new BitSet();
 
-    private static int getCount(final int i, final int j, final int k, final BitSet[] bitSets) {
+    private static int getCount(BitSet preComputed, final int k, final BitSet[] bitSets) {
         bitSet.clear();
-        bitSet.or(bitSets[i]);
-        bitSet.or(bitSets[j]);
+        bitSet.or(preComputed);
         bitSet.or(bitSets[k]);
         return bitSet.cardinality();
     }
