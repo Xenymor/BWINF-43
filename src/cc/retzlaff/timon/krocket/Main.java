@@ -62,7 +62,6 @@ public class Main {
                 double y2 = lastGate.y1 + stepSizeY2 * j;
                 Shot toTest = new Shot(x1, y1, x2, y2);
                 if (testShot(toTest, gates, radius)) {
-                    System.out.println(i + " " + j);
                     return toTest;
                 }
             }

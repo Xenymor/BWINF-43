@@ -19,17 +19,10 @@ public class FormatDictionary {
         StringBuilder builder = new StringBuilder();
         List<String> lines = Files.readAllLines(Path.of(PATH));
         HashMap<String, List<String>> synonyms = new HashMap<>();
-        for (int i = 0; i < lines.size(); i++) {
-            if (i == lines.size() - 1) {
-                System.out.println();
-            }
-            final String line = lines.get(i);
+        for (final String line : lines) {
             String[] words = formatLine(line, builder).split(";");
             for (int j = 0; j < words.length; j++) {
                 final String word = words[j];
-                if (word.contains(";")) {
-                    System.out.println();
-                }
                 if (word.isEmpty()) {
                     continue;
                 }
@@ -58,9 +51,6 @@ public class FormatDictionary {
             builder.append(key);
             final List<String> strings = synonyms.get(key);
             for (String synonym : strings) {
-                if (synonym.contains(";")) {
-                    System.out.println();
-                }
                 builder.append(",").append(synonym);
             }
             builder.append("\n");

@@ -228,7 +228,6 @@ public class Main {
             for (String option : options) {
                 JButton button = new JButton(option);
                 button.addActionListener(e -> {
-                    System.out.println("You selected: " + option);
                     if (!option.equals("Close")) {
                         choiceOutput.set(option);
                     } else {
