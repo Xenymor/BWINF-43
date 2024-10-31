@@ -32,7 +32,7 @@ public class Main {
         }
 
         Arrays.sort(values);
-        removeDoubledValues(values);
+        values = removeDoubledValues(values);
         int[] indices = new int[PATH_COUNT];
         for (int i = 0; i < indices.length; i++) {
             indices[i] = i;
