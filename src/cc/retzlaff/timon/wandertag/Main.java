@@ -20,7 +20,7 @@ public class Main {
 
         if (persons.length <= PATH_COUNT) {
             printEasySolution(persons);
-            return; // Use return instead of System.exit
+            return;
         }
 
         values = removeDoubledValues(values);
@@ -29,7 +29,6 @@ public class Main {
         int[] bestLengths = new int[PATH_COUNT];
 
         long start = System.nanoTime();
-        // Iterate through unique combinations of lengths
         for (int i = 0; i < values.length - 2; i++) {
             for (int j = i + 1; j < values.length - 1; j++) {
                 for (int k = j + 1; k < values.length; k++) {
