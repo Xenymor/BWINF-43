@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         List<String> lines = Files.readAllLines(Path.of(args[0]));
+        long start = System.nanoTime();
 
         final int count = Integer.parseInt(lines.get(0));
         int[] values = new int[count];
@@ -26,26 +28,15 @@ public class Main {
         values = removeDoubledValues(values);
         Arrays.sort(values);
 
-        int[][] countTable = new int[values.length][values.length];
-        initializeTable(countTable, values, persons);
+        BitSet[] bitSets = initializeBitSets(values, persons);
 
         int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
 
-        long start = System.nanoTime();
         for (int i = 0; i < values.length - 2; i++) {
-            int localBest = 0;
             for (int j = i + 1; j < values.length - 1; j++) {
                 for (int k = j + 1; k < values.length; k++) {
-                    localBest = Math.max(countTable[j][k], localBest);
-                }
-            }
-            if (getCount(values[i], persons)+localBest < bestCount) {
-                continue;
-            }
-            for (int j = i + 1; j < values.length - 1; j++) {
-                for (int k = j + 1; k < values.length; k++) {
-                    int currCount = getCount(values[i], values[j], values[k], persons);
+                    int currCount = getCount(i, j, k, bitSets);
                     if (currCount > bestCount) {
                         bestCount = currCount;
                         bestLengths[0] = values[i];
@@ -60,43 +51,18 @@ public class Main {
         printResult(bestCount, bestLengths, end - start);
     }
 
-    private static int getCount(final int length1, final Person[] persons) {
-        int count = 0;
-        for (Person person : persons) {
-            if (isParticipating(person, length1)) {
-                count++;
+    private static BitSet[] initializeBitSets(final int[] values, final Person[] persons) {
+        BitSet[] result = new BitSet[values.length];
+        for (int j = 0; j < values.length; j++) {
+            final int value = values[j];
+            BitSet curr = new BitSet();
+            for (int i = 0; i < persons.length; i++) {
+                Person person = persons[i];
+                curr.set(i, isInRange(person, value));
             }
+            result[j] = curr;
         }
-        return count;
-
-    }
-
-    private static boolean isParticipating(final Person person, final int length1) {
-        return isInRange(person, length1);
-    }
-
-    private static void initializeTable(final int[][] countTable, final int[] values, final Person[] persons) {
-        for (int i = 0; i < values.length; i++) {
-            for (int j = 0; j < i; j++) {
-                int count = getCount(values[i], values[j], persons);
-                countTable[i][j] = count;
-                countTable[j][i] = count;
-            }
-        }
-    }
-
-    private static int getCount(final int length1, final int length2, final Person[] persons) {
-        int count = 0;
-        for (Person person : persons) {
-            if (isParticipating(person, length1, length2)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private static boolean isParticipating(final Person person, final int length1, final int length2) {
-        return isInRange(person, length1) || isInRange(person, length2);
+        return result;
     }
 
     public static int[] removeDoubledValues(int[] values) {
@@ -107,18 +73,14 @@ public class Main {
         return resultSet.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    private static int getCount(final int length1, final int length2, final int length3, final Person[] persons) {
-        int count = 0;
-        for (Person person : persons) {
-            if (isParticipating(person, length1, length2, length3)) {
-                count++;
-            }
-        }
-        return count;
-    }
+    static BitSet bitSet = new BitSet();
 
-    private static boolean isParticipating(final Person person, final int length1, final int length2, final int length3) {
-        return isInRange(person, length1) || isInRange(person, length2) || isInRange(person, length3);
+    private static int getCount(final int i, final int j, final int k, final BitSet[] bitSets) {
+        bitSet.clear();
+        bitSet.or(bitSets[i]);
+        bitSet.or(bitSets[j]);
+        bitSet.or(bitSets[k]);
+        return bitSet.cardinality();
     }
 
     private static boolean isInRange(Person person, int length) {
