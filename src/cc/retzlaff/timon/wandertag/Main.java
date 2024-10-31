@@ -37,9 +37,9 @@ public class Main {
         int[] bestIndices = new int[PATH_COUNT];
 
         long start = System.nanoTime();
-        for (int i = 0; i < persons.length - 2; i++) {
-            for (int j = i + 1; j < persons.length - 1; j++) {
-                for (int k = j + 1; k < persons.length; k++) {
+        for (int i = 0; i < values.length - 2; i++) {
+            for (int j = i + 1; j < values.length - 1; j++) {
+                for (int k = j + 1; k < values.length; k++) {
                     int currCount = getCount(values[i], values[j], values[k], persons);
                     if (currCount > bestCount) {
                         bestCount = currCount;
@@ -54,11 +54,8 @@ public class Main {
         long end = System.nanoTime();
 
         StringBuilder solution = new StringBuilder();
-        solution.append(bestCount).
-
-                append(" people attend for the lengths: ");
-        for (
-                final int index : bestIndices) {
+        solution.append(bestCount).append(" people attend for the lengths: ");
+        for (final int index : bestIndices) {
             solution.append(values[index]).append("m; ");
         }
         solution.replace(solution.length() - 2, solution.length(), "");
@@ -87,12 +84,13 @@ public class Main {
     }
 
     private static boolean isParticipating(final Person person, final int length1, final int length2, final int length3) {
-        int min = person.min;
-        int max = person.max;
-        return (min <= length1 && max >= length1)
-                || (min <= length2 && max >= length2)
-                || (min <= length3 && max >= length2);
+        return isInRange(person, length1) || isInRange(person, length2) || isInRange(person, length3);
     }
+
+    private static boolean isInRange(Person person, int length) {
+        return person.min <= length && person.max >= length;
+    }
+
 
     private static void initializeArrays(final List<String> lines, final int[] values, final Person[] persons) {
         for (int i = 0; i < persons.length; i++) {
