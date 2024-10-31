@@ -88,20 +88,26 @@ public class Main {
     }
 
     private static int getCount(final int[] indices, final int[] values, final Person[] persons) {
-        for (Person person : persons) {
-            person.included = false;
+        final int[] currValues = new int[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            currValues[i] = values[indices[i]];
         }
         int count = 0;
-        for (int index : indices) {
-            int length = values[index];
-            for (Person person : persons) {
-                if (!person.included && length >= person.min && length <= person.max) {
-                    count++;
-                    person.included = true;
-                }
+        for (Person person : persons) {
+            if (isParticipating(person, currValues)) {
+                count++;
             }
         }
         return count;
+    }
+
+    private static boolean isParticipating(final Person person, final int[] currValues) {
+        for (int length : currValues) {
+            if (length >= person.min && length <= person.max) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void initializeArrays(final List<String> lines, final int[] values, final Person[] persons) {
