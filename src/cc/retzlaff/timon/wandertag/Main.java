@@ -3,7 +3,6 @@ package cc.retzlaff.timon.wandertag;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -34,37 +33,32 @@ public class Main {
 
         values = removeDoubledValues(values);
         Arrays.sort(values);
-        int[] indices = new int[PATH_COUNT];
-        for (int i = 0; i < indices.length; i++) {
-            indices[i] = i;
-        }
         int bestCount = -1;
         int[] bestIndices = new int[PATH_COUNT];
 
         long start = System.nanoTime();
-        while (indices[0] <= values.length - PATH_COUNT) {
-            int currCount = getCount(indices, values, persons);
-            if (currCount > bestCount) {
-                bestCount = currCount;
-                bestIndices = Arrays.copyOf(indices, indices.length);
-            }
-            for (int i = indices.length - 1; i >= 0; i--) {
-                indices[i]++;
-                if (indices[i] >= values.length - (indices.length - i)) {
-                    if (i == 0) {
-                        break;
+        for (int i = 0; i < persons.length - 2; i++) {
+            for (int j = i + 1; j < persons.length - 1; j++) {
+                for (int k = j + 1; k < persons.length; k++) {
+                    int currCount = getCount(values[i], values[j], values[k], persons);
+                    if (currCount > bestCount) {
+                        bestCount = currCount;
+                        bestIndices[0] = i;
+                        bestIndices[1] = j;
+                        bestIndices[2] = k;
                     }
-                    indices[i] = indices[i - 1] + 2;
-                } else {
-                    break;
                 }
             }
         }
+
         long end = System.nanoTime();
 
         StringBuilder solution = new StringBuilder();
-        solution.append(bestCount).append(" people attend for the lengths: ");
-        for (final int index : bestIndices) {
+        solution.append(bestCount).
+
+                append(" people attend for the lengths: ");
+        for (
+                final int index : bestIndices) {
             solution.append(values[index]).append("m; ");
         }
         solution.replace(solution.length() - 2, solution.length(), "");
@@ -82,27 +76,22 @@ public class Main {
         return resultSet.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    private static int getCount(final int[] indices, final int[] values, final Person[] persons) {
-        final int[] currValues = new int[indices.length];
-        for (int i = 0; i < indices.length; i++) {
-            currValues[i] = values[indices[i]];
-        }
+    private static int getCount(final int length1, final int length2, final int length3, final Person[] persons) {
         int count = 0;
         for (Person person : persons) {
-            if (isParticipating(person, currValues)) {
+            if (isParticipating(person, length1, length2, length3)) {
                 count++;
             }
         }
         return count;
     }
 
-    private static boolean isParticipating(final Person person, final int[] currValues) {
-        for (int length : currValues) {
-            if (length >= person.min && length <= person.max) {
-                return true;
-            }
-        }
-        return false;
+    private static boolean isParticipating(final Person person, final int length1, final int length2, final int length3) {
+        int min = person.min;
+        int max = person.max;
+        return (min <= length1 && max >= length1)
+                || (min <= length2 && max >= length2)
+                || (min <= length3 && max >= length2);
     }
 
     private static void initializeArrays(final List<String> lines, final int[] values, final Person[] persons) {
