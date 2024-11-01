@@ -8,18 +8,10 @@ public class MyBitSet {
         this.words = new long[longCount];
     }
 
-    /**
-     * Copies the contents of other to this
-     * @param other must have the same length
-     */
     public void copy(MyBitSet other) {
         System.arraycopy(other.words, 0, words, 0, words.length);
     }
 
-    /**
-     * Applies the or operation to all bits and saves the result in this
-     * @param other must have the same length
-     */
     public void or(MyBitSet other) {
         for (int i = 0; i < words.length; i++)
             words[i] |= other.words[i];
@@ -32,7 +24,8 @@ public class MyBitSet {
     public int orCardinality(final MyBitSet other) {
         int count = 0;
         final long[] otherWords = other.words;
-        for (int i = 0; i < words.length; i++) {
+        final int length = words.length;
+        for (int i = 0; i < length; i++) {
             count += Long.bitCount(this.words[i] | otherWords[i]);
         }
         return count;
