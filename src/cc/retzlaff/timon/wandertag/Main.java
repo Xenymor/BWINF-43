@@ -4,59 +4,62 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 
 public class Main {
     static final int PATH_COUNT = 3;
+    //TODO remove
+    public static final int TEST_COUNT = 20;
     static int doubledCount = 0;
     static int bitsetLength;
 
     public static void main(String[] args) throws IOException {
         List<String> lines = Files.readAllLines(Path.of(args[0]));
         long start = System.nanoTime();
-
-        final int count = Integer.parseInt(lines.get(0));
-        int[] values = new int[count];
-        Person[] persons = new Person[count];
-        initializeArrays(lines, values, persons);
-
-        if (persons.length <= PATH_COUNT) {
-            printEasySolution(persons);
-            return;
-        }
-
-        values = removeDoubledValues(values);
-        Arrays.sort(values);
-
-        MyBitSet[] bitSets = initializeBitSets(values, persons);
-
         int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
 
-        final MyBitSet preComputed = new MyBitSet(bitsetLength);
+        for (int a = 0; a < TEST_COUNT; a++) {
+            bestCount = -1;
+            final int count = Integer.parseInt(lines.get(0));
+            int[] values = new int[count];
+            Person[] persons = new Person[count];
+            initializeArrays(lines, values, persons);
 
-        for (int i = 0; i < values.length - 2; i++) {
-            for (int j = i + 1; j < values.length - 1; j++) {
-                preComputed.copy(bitSets[i]);
-                preComputed.or(bitSets[j]);
-                for (int k = j + 1; k < values.length; k++) {
-                    int currCount = preComputed.orCardinality(bitSets[k]);
-                    if (currCount > bestCount) {
-                        bestCount = currCount;
-                        bestLengths[0] = values[i];
-                        bestLengths[1] = values[j];
-                        bestLengths[2] = values[k];
-                    } else if (currCount + (values.length - k - 1) + doubledCount <= bestCount) {
-                        break;
+            if (persons.length <= PATH_COUNT) {
+                printEasySolution(persons);
+                return;
+            }
+
+            values = removeDoubledValues(values);
+            Arrays.sort(values);
+
+            MyBitSet[] bitSets = initializeBitSets(values, persons);
+
+
+            final MyBitSet preComputed = new MyBitSet(bitsetLength);
+
+            for (int i = 0; i < values.length - 2; i++) {
+                for (int j = i + 1; j < values.length - 1; j++) {
+                    preComputed.copyOr(bitSets[i], bitSets[j]);
+                    for (int k = j + 1; k < values.length; k++) {
+                        int currCount = preComputed.orCardinality(bitSets[k]);
+                        if (currCount > bestCount) {
+                            bestCount = currCount;
+                            bestLengths[0] = values[i];
+                            bestLengths[1] = values[j];
+                            bestLengths[2] = values[k];
+                        } else if (currCount + (values.length - k - 1) + doubledCount <= bestCount) {
+                            break;
+                        }
                     }
                 }
             }
         }
         long end = System.nanoTime();
 
-        printResult(bestCount, bestLengths, end - start);
+        printResult(bestCount, bestLengths, (end - start) / TEST_COUNT);
     }
 
     private static MyBitSet[] initializeBitSets(final int[] values, final Person[] persons) {

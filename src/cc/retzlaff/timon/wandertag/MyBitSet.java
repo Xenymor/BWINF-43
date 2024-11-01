@@ -17,6 +17,14 @@ public class MyBitSet {
             words[i] |= other.words[i];
     }
 
+    public void copyOr(MyBitSet first, MyBitSet second) {
+        final long[] firstWords = first.words;
+        final long[] secondWords = second.words;
+        for (int i = 0; i < words.length; i++) {
+            this.words[i] = firstWords[i] | secondWords[i];
+        }
+    }
+
     public void set(final int bitIndex) {
         words[bitIndex >> ADDRESS_BITS_PER_WORD] |= (1L << bitIndex);
     }
