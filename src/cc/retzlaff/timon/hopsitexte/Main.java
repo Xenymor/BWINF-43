@@ -16,10 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
-    //TODO change path
-    public static final String ALARM_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
+    public static final String ALARM_PATH = "src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
     //Taken of https://www.openthesaurus.de
-    public static final String THESAURUS_PATH = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\hopsitexte\\synonyms.csv";
+    public static final String THESAURUS_PATH = "src\\cc\\retzlaff\\timon\\hopsitexte\\synonyms.csv";
     static final Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
     static final Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
     static final Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
