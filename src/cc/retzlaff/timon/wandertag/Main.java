@@ -11,6 +11,7 @@ import java.util.List;
 public class Main {
     static final int PATH_COUNT = 3;
     static int doubledCount = 0;
+    static int bitsetLength;
 
     public static void main(String[] args) throws IOException {
         List<String> lines = Files.readAllLines(Path.of(args[0]));
@@ -29,19 +30,19 @@ public class Main {
         values = removeDoubledValues(values);
         Arrays.sort(values);
 
-        BitSet[] bitSets = initializeBitSets(values, persons);
+        MyBitSet[] bitSets = initializeBitSets(values, persons);
 
         int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
 
-        BitSet preComputed = new BitSet();
+        final MyBitSet preComputed = new MyBitSet(bitsetLength);
+
         for (int i = 0; i < values.length - 2; i++) {
             for (int j = i + 1; j < values.length - 1; j++) {
-                preComputed.clear();
-                preComputed.or(bitSets[i]);
+                preComputed.copy(bitSets[i]);
                 preComputed.or(bitSets[j]);
                 for (int k = j + 1; k < values.length; k++) {
-                    int currCount = getCount(preComputed, k, bitSets);
+                    int currCount = preComputed.orCardinality(bitSets[k]);
                     if (currCount > bestCount) {
                         bestCount = currCount;
                         bestLengths[0] = values[i];
@@ -58,14 +59,19 @@ public class Main {
         printResult(bestCount, bestLengths, end - start);
     }
 
-    private static BitSet[] initializeBitSets(final int[] values, final Person[] persons) {
-        BitSet[] result = new BitSet[values.length];
+    private static MyBitSet[] initializeBitSets(final int[] values, final Person[] persons) {
+        MyBitSet[] result = new MyBitSet[values.length];
+        int length = persons.length / 64 + (persons.length % 64 == 0 ? 0 : 1);
+        bitsetLength = length;
         for (int j = 0; j < values.length; j++) {
             final int value = values[j];
-            BitSet curr = new BitSet();
+            MyBitSet curr = new MyBitSet(length);
             for (int i = 0; i < persons.length; i++) {
                 Person person = persons[i];
-                curr.set(i, isInRange(person, value));
+                final boolean inRange = isInRange(person, value);
+                if (inRange) {
+                    curr.set(i);
+                }
             }
             result[j] = curr;
         }
@@ -79,15 +85,6 @@ public class Main {
         }
         doubledCount = values.length - resultSet.size();
         return resultSet.stream().mapToInt(Integer::intValue).toArray();
-    }
-
-    static BitSet bitSet = new BitSet();
-
-    private static int getCount(BitSet preComputed, final int k, final BitSet[] bitSets) {
-        bitSet.clear();
-        bitSet.or(preComputed);
-        bitSet.or(bitSets[k]);
-        return bitSet.cardinality();
     }
 
     private static boolean isInRange(Person person, int length) {
