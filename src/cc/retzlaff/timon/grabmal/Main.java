@@ -62,16 +62,17 @@ public class Main {
             toCheck.remove(0);
             List<State> allChildStates = getAllChildStates(state, gates);
             for (State childState : allChildStates) {
-                final boolean isWaitingMove = state.time() != childState.time();
+                final int stateTime = state.time();
+                final boolean isWaitingMove = stateTime != childState.time();
                 if (isWaitingMove && childState.position() >= 0) {
-                    if ((childState.time() - state.time()) >= getTimeUntil(gates[state.position()], false, state.time())) {
-                        // I did die here!
+                    if ((childState.time() - stateTime) >= getTimeUntil(gates[state.position()], false, stateTime)) {
+                        // I died here!
                         continue;
                     }
                 }
                 if (previous.containsKey(childState)) {
                     final State state1 = previous.get(childState);
-                    if (state.time() < state1.time()) {
+                    if (stateTime < state1.time()) {
                         previous.put(childState, state);
                     }
                 } else {
