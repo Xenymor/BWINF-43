@@ -41,17 +41,18 @@ public class Main {
 
             final MyBitSet preComputed = new MyBitSet(bitsetLength);
 
-            for (int i = 0; i < values.length - 2; i++) {
-                for (int j = i + 1; j < values.length - 1; j++) {
+            int len = values.length;
+            for (int i = 0; i < len - 2; i++) {
+                for (int j = len - 2; j >= i + 1; j--) {
                     preComputed.copyOr(bitSets[i], bitSets[j]);
-                    for (int k = j + 1; k < values.length; k++) {
+                    for (int k = j + 1; k < len; k++) {
                         int currCount = preComputed.orCardinality(bitSets[k]);
                         if (currCount > bestCount) {
                             bestCount = currCount;
                             bestLengths[0] = values[i];
                             bestLengths[1] = values[j];
                             bestLengths[2] = values[k];
-                        } else if (currCount + (values.length - k - 1) + doubledCount <= bestCount) {
+                        } else if (currCount + (len - k - 1) + doubledCount <= bestCount) {
                             break;
                         }
                     }
