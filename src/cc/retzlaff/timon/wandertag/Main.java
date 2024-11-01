@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Main {
     static final int PATH_COUNT = 3;
+    static int doubledCount = 0;
 
     public static void main(String[] args) throws IOException {
         List<String> lines = Files.readAllLines(Path.of(args[0]));
@@ -46,6 +47,8 @@ public class Main {
                         bestLengths[0] = values[i];
                         bestLengths[1] = values[j];
                         bestLengths[2] = values[k];
+                    } else if (currCount + (values.length - k - 1) + doubledCount <= bestCount) {
+                        break;
                     }
                 }
             }
@@ -74,6 +77,7 @@ public class Main {
         for (int value : values) {
             resultSet.add(value);
         }
+        doubledCount = values.length - resultSet.size();
         return resultSet.stream().mapToInt(Integer::intValue).toArray();
     }
 
