@@ -7,7 +7,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
         List<String> inputLines = Files.readAllLines(java.nio.file.Path.of(args[0]));
         Gate[] gates = parseGates(inputLines);
+        long start = System.nanoTime();
         List<State> states = findPath(gates);
+        long end = System.nanoTime();
+        System.out.println((end-start)/1_000_000f + "ms");
         System.out.println(pathToString(states));
     }
 
@@ -104,8 +107,9 @@ public class Main {
     }
 
     private static void addState(final List<State> toCheck, final State futureState) {
+        final int futureTime = futureState.time();
         for (int i = 0; i < toCheck.size(); i++) {
-            if (toCheck.get(i).time() > futureState.time()) {
+            if (toCheck.get(i).time() > futureTime) {
                 toCheck.add(i, futureState);
                 return;
             }
