@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class Main {
 
     private static MyBitSet[] initializeBitSets(final int[] values, final Person[] persons) {
         MyBitSet[] result = new MyBitSet[values.length];
-        int length = persons.length / 64 + (persons.length % 64 == 0 ? 0 : 1);
+        int length = persons.length / 64 + ((persons.length & 63) == 0 ? 0 : 1);
         bitsetLength = length;
         for (int j = 0; j < values.length; j++) {
             final int value = values[j];
