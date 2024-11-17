@@ -10,8 +10,8 @@ public class Main {
         long start = System.nanoTime();
         List<State> states = findPath(gates);
         long end = System.nanoTime();
-        System.out.println((end-start)/1_000_000f + "ms");
         System.out.println(pathToString(states));
+        System.out.println("Found in " + (end-start)/1_000_000f + "ms");
     }
 
     private static String pathToString(final List<State> states) {
