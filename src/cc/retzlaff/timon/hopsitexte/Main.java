@@ -102,17 +102,20 @@ public class Main {
                             int ogPosition = originalIndex.get(currPos);
                             int ogLastPos1 = -1;
                             int ogLastPos2 = -1;
+                            int lineBreakCount1 = 0;
+                            int lineBreakCount2 = 0;
                             try {
                                 final Integer ogIndex1 = originalIndex.get(positions1.get(i - 1));
-                                final int lineBreakCount = getLineBreakCount(text, ogIndex1);
-                                ogLastPos1 = ogIndex1 - lineBreakCount;
+                                lineBreakCount1 = getLineBreakCount(text, ogIndex1);
+                                ogLastPos1 = ogIndex1;
                                 final Integer ogIndex2 = originalIndex.get(positions2.get(otherIndex - 1));
-                                final int lineBreakCount1 = getLineBreakCount(text, ogIndex2);
-                                ogLastPos2 = ogIndex2 - lineBreakCount1;
+                                lineBreakCount2 = getLineBreakCount(text, ogIndex2);
+                                ogLastPos2 = ogIndex2;
                             } catch (IndexOutOfBoundsException ignored) {
                             }
                             try {
-                                highlighter.addHighlight(ogPosition, ogPosition + 1, redPainter);
+                                int lineBreakCount = getLineBreakCount(text, ogPosition);
+                                highlighter.addHighlight(ogPosition - lineBreakCount, ogPosition - lineBreakCount + 1, redPainter);
                                 if (ogLastPos1 > -1) {
                                     if (!isDialog1Open.get()) {
                                         ValuePosition valuePosition = getWord(ogLastPos1, text);
@@ -127,7 +130,7 @@ public class Main {
                                             isDialog1Open.set(true);
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos1, ogLastPos1 + 1, bluePainter);
+                                    highlighter.addHighlight(ogLastPos1 - lineBreakCount1, ogLastPos1 - lineBreakCount1 + 1, bluePainter);
                                 }
                                 if (ogLastPos2 > -1) {
                                     if (!isDialog2Open.get()) {
@@ -145,7 +148,7 @@ public class Main {
                                             }
                                         }
                                     }
-                                    highlighter.addHighlight(ogLastPos2, ogLastPos2 + 1, greenPainter);
+                                    highlighter.addHighlight(ogLastPos2 - lineBreakCount2, ogLastPos2 - lineBreakCount2 + 1, greenPainter);
                                 }
                             } catch (BadLocationException e) {
                                 e.printStackTrace();
