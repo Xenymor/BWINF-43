@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
     public static final String ALARM_PATH = "src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
-    //Taken of https://www.openthesaurus.de
+    //https://www.openthesaurus.de
     public static final String THESAURUS_PATH = "src\\cc\\retzlaff\\timon\\hopsitexte\\synonyms.csv";
     static final Highlighter.HighlightPainter bluePainter = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
     static final Highlighter.HighlightPainter greenPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.GREEN);
@@ -71,7 +71,7 @@ public class Main {
                 StringBuilder formattedTextBuilder = new StringBuilder();
                 for (int i = 0; i < inputChars.length; i++) {
                     final char currChar = inputChars[i];
-                    if (Character.isAlphabetic(currChar)) {
+                    if (isAlphabetic(currChar)) {
                         formattedTextBuilder.append(currChar);
                         originalIndex.add(i);
                     }
@@ -103,8 +103,12 @@ public class Main {
                             int ogLastPos1 = -1;
                             int ogLastPos2 = -1;
                             try {
-                                ogLastPos1 = originalIndex.get(positions1.get(i - 1));
-                                ogLastPos2 = originalIndex.get(positions2.get(otherIndex - 1));
+                                final Integer ogIndex1 = originalIndex.get(positions1.get(i - 1));
+                                final int lineBreakCount = getLineBreakCount(text, ogIndex1);
+                                ogLastPos1 = ogIndex1 - lineBreakCount;
+                                final Integer ogIndex2 = originalIndex.get(positions2.get(otherIndex - 1));
+                                final int lineBreakCount1 = getLineBreakCount(text, ogIndex2);
+                                ogLastPos2 = ogIndex2 - lineBreakCount1;
                             } catch (IndexOutOfBoundsException ignored) {
                             }
                             try {
@@ -152,6 +156,14 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static int getLineBreakCount(final String text, final Integer ogIndex1) {
+        return (int) text.substring(0, ogIndex1+1).codePoints().filter(ch -> ch == '\n').count();
+    }
+
+    private static boolean isAlphabetic(final char c) {
+        return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäöüÄÖÜß".indexOf(c) >= 0;
     }
 
     private static String setText(final JTextPane textPane, final AtomicInteger atomicPosition, final AtomicReference<String> atomicChoice, JDialog popUp) {
@@ -278,7 +290,7 @@ public class Main {
         int start = position;
         while (start > 0) {
             final char codePoint = text.charAt(start - 1);
-            if (!Character.isWhitespace(codePoint) && Character.isAlphabetic(codePoint)) {
+            if (!Character.isWhitespace(codePoint) && isAlphabetic(codePoint)) {
                 start--;
             } else {
                 break;
@@ -288,7 +300,7 @@ public class Main {
         int end = position;
         while (end < text.length()) {
             final char codePoint = text.charAt(end);
-            if (!Character.isWhitespace(codePoint) && Character.isAlphabetic(codePoint)) {
+            if (!Character.isWhitespace(codePoint) && isAlphabetic(codePoint)) {
                 end++;
             } else {
                 break;
