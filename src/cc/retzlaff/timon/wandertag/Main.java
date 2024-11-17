@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
     static final int PATH_COUNT = 3;
     //TODO remove
-    public static final int TEST_COUNT = 20;
+    public static final double TEST_COUNT = 20;
     static int doubledCount = 0;
     static int bitsetLength;
 
@@ -27,13 +27,13 @@ public class Main {
             Person[] persons = new Person[count];
             initializeArrays(lines, values, persons);
 
-            if (persons.length <= PATH_COUNT) {
-                printEasySolution(persons);
-                return;
-            }
-
             values = removeDoubledValues(values);
             Arrays.sort(values);
+
+            if (values.length <= PATH_COUNT) {
+                printEasySolution(persons, values);
+                return;
+            }
 
             MyBitSet[] bitSets = initializeBitSets(values, persons);
 
@@ -61,6 +61,18 @@ public class Main {
         long end = System.nanoTime();
 
         printResult(bestCount, bestLengths, (end - start) / TEST_COUNT);
+    }
+
+    private static void printEasySolution(final Person[] persons, final int[] values) {
+        StringBuilder solution = new StringBuilder();
+        solution.append(persons.length).append(" people attend for the lengths: ");
+        for (final int value : values) {
+            solution.append(value).append("m; ");
+        }
+        if (persons.length > 0) {
+            solution.replace(solution.length() - 2, solution.length(), "");
+        }
+        System.out.println(solution);
     }
 
     private static MyBitSet[] initializeBitSets(final int[] values, final Person[] persons) {
@@ -118,7 +130,7 @@ public class Main {
         System.out.println(solution);
     }
 
-    private static void printResult(int bestCount, int[] bestLengths, long duration) {
+    private static void printResult(int bestCount, int[] bestLengths, double duration) {
         StringBuilder solution = new StringBuilder();
         solution.append(bestCount).append(" people attend for the lengths: ");
         for (int length : bestLengths) {
