@@ -7,6 +7,7 @@ public class MyBitSet {
         this.words = new long[longCount];
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public void copyOr(MyBitSet first, MyBitSet second) {
         final long[] firstWords = first.words;
         final long[] secondWords = second.words;
@@ -21,7 +22,7 @@ public class MyBitSet {
 
     public int orCardinality(final MyBitSet other) {
         int count = 0;
-        final long[] otherWords = other.words;
+        @SuppressWarnings("UnnecessaryLocalVariable") final long[] otherWords = other.words;
         final int length = words.length;
         for (int i = 0; i < length; i++) {
             count += Long.bitCount(words[i] | otherWords[i]);

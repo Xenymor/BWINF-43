@@ -1,5 +1,6 @@
 package cc.retzlaff.timon.wandertag;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class Person {
     final int min;
     final int max;

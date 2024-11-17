@@ -154,7 +154,6 @@ public class Main {
         }
     }
 
-    //TODO delete
     private static class MyFrame extends JFrame {
         final Shot shot;
         final Gate[] gates;

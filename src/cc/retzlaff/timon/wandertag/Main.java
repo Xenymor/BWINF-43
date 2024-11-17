@@ -9,8 +9,6 @@ import java.util.List;
 
 public class Main {
     static final int PATH_COUNT = 3;
-    //TODO remove
-    public static final double TEST_COUNT = 20;
     static int doubledCount = 0;
     static int bitsetLength;
 
@@ -19,48 +17,42 @@ public class Main {
         long start = System.nanoTime();
         int bestCount = -1;
         int[] bestLengths = new int[PATH_COUNT];
+        final int count = Integer.parseInt(lines.get(0));
+        int[] values = new int[count];
+        Person[] persons = new Person[count];
+        initializeArrays(lines, values, persons);
 
-        for (int a = 0; a < TEST_COUNT; a++) {
-            bestCount = -1;
-            final int count = Integer.parseInt(lines.get(0));
-            int[] values = new int[count];
-            Person[] persons = new Person[count];
-            initializeArrays(lines, values, persons);
+        values = removeDoubledValues(values);
+        Arrays.sort(values);
 
-            values = removeDoubledValues(values);
-            Arrays.sort(values);
+        if (values.length <= PATH_COUNT) {
+            printEasySolution(persons, values);
+            return;
+        }
 
-            if (values.length <= PATH_COUNT) {
-                printEasySolution(persons, values);
-                return;
-            }
+        MyBitSet[] bitSets = initializeBitSets(values, persons);
+        final MyBitSet preComputed = new MyBitSet(bitsetLength);
 
-            MyBitSet[] bitSets = initializeBitSets(values, persons);
-
-
-            final MyBitSet preComputed = new MyBitSet(bitsetLength);
-
-            int len = values.length;
-            for (int i = 0; i < len - 2; i++) {
-                for (int j = len - 2; j >= i + 1; j--) {
-                    preComputed.copyOr(bitSets[i], bitSets[j]);
-                    for (int k = j + 1; k < len; k++) {
-                        int currCount = preComputed.orCardinality(bitSets[k]);
-                        if (currCount > bestCount) {
-                            bestCount = currCount;
-                            bestLengths[0] = values[i];
-                            bestLengths[1] = values[j];
-                            bestLengths[2] = values[k];
-                        } else if (currCount + (len - k - 1) + doubledCount <= bestCount) {
-                            break;
-                        }
+        int len = values.length;
+        for (int i = 0; i < len - 2; i++) {
+            for (int j = len - 2; j >= i + 1; j--) {
+                preComputed.copyOr(bitSets[i], bitSets[j]);
+                for (int k = j + 1; k < len; k++) {
+                    int currCount = preComputed.orCardinality(bitSets[k]);
+                    if (currCount > bestCount) {
+                        bestCount = currCount;
+                        bestLengths[0] = values[i];
+                        bestLengths[1] = values[j];
+                        bestLengths[2] = values[k];
+                    } else if (currCount + (len - k - 1) + doubledCount <= bestCount) {
+                        break;
                     }
                 }
             }
         }
         long end = System.nanoTime();
 
-        printResult(bestCount, bestLengths, (end - start) / TEST_COUNT);
+        printResult(bestCount, bestLengths, (double) (end - start));
     }
 
     private static void printEasySolution(final Person[] persons, final int[] values) {
@@ -116,18 +108,6 @@ public class Main {
             values[i] = min;
             persons[i] = new Person(min, max);
         }
-    }
-
-    private static void printEasySolution(Person[] persons) {
-        StringBuilder solution = new StringBuilder();
-        solution.append(persons.length).append(" people attend for the lengths: ");
-        for (final Person person : persons) {
-            solution.append(person.min).append("m; ");
-        }
-        if (persons.length > 0) {
-            solution.replace(solution.length() - 2, solution.length(), "");
-        }
-        System.out.println(solution);
     }
 
     private static void printResult(int bestCount, int[] bestLengths, double duration) {

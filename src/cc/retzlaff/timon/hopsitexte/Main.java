@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+@SuppressWarnings("BusyWait")
 public class Main {
     public static final String ALARM_PATH = "src\\cc\\retzlaff\\timon\\hopsitexte\\Alarm.wav";
     //https://www.openthesaurus.de
@@ -165,6 +166,7 @@ public class Main {
         return (int) text.substring(0, ogIndex1+1).codePoints().filter(ch -> ch == '\n').count();
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private static boolean isAlphabetic(final char c) {
         return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäöüÄÖÜß".indexOf(c) >= 0;
     }
