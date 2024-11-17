@@ -146,7 +146,8 @@ public class Main {
     private static void parseGates(final java.util.List<String> inputLines, final Gate[] gates) {
         for (int i = 0; i < gates.length; i++) {
             String[] values = inputLines.get(i + 1).split(" ");
-            gates[i] = new Gate(Integer.parseInt(values[0]),
+            gates[i] = new Gate(
+                    Integer.parseInt(values[0]),
                     Integer.parseInt(values[1]),
                     Integer.parseInt(values[2]),
                     Integer.parseInt(values[3]));
