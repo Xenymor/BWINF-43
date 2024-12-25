@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.wandertag;
+package cc.retzlaff.timon.round1.wandertag;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class Person {

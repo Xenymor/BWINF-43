@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.grabmal;
+package cc.retzlaff.timon.round1.grabmal;
 
 public record Gate(int period) {
 

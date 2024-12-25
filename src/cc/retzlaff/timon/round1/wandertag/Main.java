@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.wandertag;
+package cc.retzlaff.timon.round1.wandertag;
 
 import java.io.IOException;
 import java.nio.file.Files;

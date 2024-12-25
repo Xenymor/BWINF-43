@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.hopsitexte;
+package cc.retzlaff.timon.round1.hopsitexte;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.krocket;
+package cc.retzlaff.timon.round1.krocket;
 
 public class Gate extends Shot {
     public Gate(final double x1, final double y1, final double x2, final double y2) {

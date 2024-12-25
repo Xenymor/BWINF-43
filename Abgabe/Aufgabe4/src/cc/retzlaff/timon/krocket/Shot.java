@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.krocket;
+package cc.retzlaff.timon.round1.krocket;
 
 public class Shot {
     final double x1;

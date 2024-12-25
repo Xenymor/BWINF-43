@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.grabmal;
+package cc.retzlaff.timon.round1.grabmal;
 
 import java.util.Objects;
 

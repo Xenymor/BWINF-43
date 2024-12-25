@@ -23,5 +23,5 @@
 hs_err_pid*
 replay_pid*
 /out/production
-src/cc/retzlaff/timon/grabmal/ExampleTask.txt
+src/cc/retzlaff/timon/round1/grabmal/ExampleTask.txt
 *.odt#

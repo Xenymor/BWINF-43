@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.hopsitexte;
+package cc.retzlaff.timon.round1.hopsitexte;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
