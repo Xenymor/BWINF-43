@@ -14,17 +14,17 @@ public class Main {
         int colorCount = Integer.parseInt(lines.get(0));
         //TODO get colorSizes
         lines.remove(0);
-        lines.remove(1);
+        lines.remove(0);
 
         String msg = String.join("\n", lines);
 
-        Map<Character, Code> charTable = Encoder.generateTable(msg, colorCount);
+        Map<Character, String> charTable = Encoder.generateTable(msg, colorCount);
 
         StringBuilder builder = new StringBuilder();
 
         final char[] charArray = msg.toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
-            builder.append(charTable.get(charArray[i]).toString());
+        for (final char c : charArray) {
+            builder.append(charTable.get(c));
         }
         System.out.println("Encoded message: " + msg);
         System.out.println("As: " + builder);
