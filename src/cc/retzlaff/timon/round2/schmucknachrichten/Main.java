@@ -44,7 +44,9 @@ public class Main {
         System.out.println("As: " + builder);
         System.out.println("In " + builder.length() + " pearls (" + ((float) builder.length() / (msg.length() * 8) * 100) + "%) = " + length + "mm");
 
-        System.out.println("Decoded as: " + Decoder.decode(builder.toString(), charTable));
+        final String encoded = builder.toString();
+        System.out.println("Decoded as: " + Decoder.decode(encoded, charTable));
+        System.out.println("Decoded as: " + Decoder.decode(encoded.substring(1) + encoded.charAt(0), charTable));
     }
 
     private static int getLength(final String str, final int[] colorSizes) {
