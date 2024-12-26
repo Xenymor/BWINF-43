@@ -12,7 +12,12 @@ public class Main {
         List<String> lines = Files.readAllLines(Path.of(args[0]));
 
         int colorCount = Integer.parseInt(lines.get(0));
-        //TODO get colorSizes
+        int[] sizes = new int[colorCount];
+        String[] sizeStrings = lines.get(1).split(" ");
+        for (int i = 0; i < sizes.length; i++) {
+            sizes[i] = Integer.parseInt(sizeStrings[i]);
+        }
+        
         lines.remove(0);
         lines.remove(0);
 
@@ -28,6 +33,8 @@ public class Main {
         }
         System.out.println("Encoded message: " + msg);
         System.out.println("As: " + builder);
-        System.out.println("In " + builder.length() + " pearls");
+        System.out.println("In " + builder.length() + " pearls (" + ((float) builder.length() / (msg.length() * 8) * 100) + "%)");
+
+        System.out.println("Decoded as: " + Decoder.decode(builder.toString(), charTable));
     }
 }

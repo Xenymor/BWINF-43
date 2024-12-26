@@ -8,7 +8,7 @@ public class Encoder {
         final char[] chars = msg.toCharArray();
         for (char curr : chars) {
             if (!counts.containsKey(curr)) {
-                counts.put(curr, 0);
+                counts.put(curr, 1);
             } else {
                 counts.put(curr, counts.get(curr) + 1);
             }
