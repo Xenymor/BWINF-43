@@ -1,17 +1,14 @@
 package cc.retzlaff.timon.round2.schmucknachrichten;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
     public static Map<Character, String> generateTable(final String msg, final Integer[] colorIndices) {
-        Map<Character, Integer> counts = new HashMap<>();
+        Map<Character, AtomicInteger> counts = new HashMap<>();
         final char[] chars = msg.toCharArray();
         for (char curr : chars) {
-            if (!counts.containsKey(curr)) {
-                counts.put(curr, 1);
-            } else {
-                counts.put(curr, counts.get(curr) + 1);
-            }
+            counts.computeIfAbsent(curr, k -> new AtomicInteger()).incrementAndGet();
         }
 
         List<Node> rootNodes = generateTree(counts, colorIndices.length);
@@ -41,11 +38,11 @@ public class Encoder {
         }
     }
 
-    private static List<Node> generateTree(final Map<Character, Integer> counts, final int colorCount) {
+    private static List<Node> generateTree(final Map<Character, AtomicInteger> counts, final int colorCount) {
         List<Node> nodes = new ArrayList<>();
 
         for (Character curr : counts.keySet()) {
-            nodes.add(new Node(curr, counts.get(curr), colorCount, true));
+            nodes.add(new Node(curr, counts.get(curr).get(), colorCount, true));
         }
 
         while (nodes.size() > colorCount) {
