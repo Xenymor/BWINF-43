@@ -34,11 +34,11 @@ public class Node {
         return code;
     }
 
-    public void assignCodesRecursively(final String parentCode, final int index) {
+    public void assignCodesRecursively(final String parentCode, final int index, final Integer[] colorIndices) {
         code = parentCode + index;
         if (!isLeaf) {
             for (int i = 0; i < children.size(); i++) {
-                children.get(i).assignCodesRecursively(code, i);
+                children.get(i).assignCodesRecursively(code, colorIndices[i], colorIndices);
             }
         }
     }

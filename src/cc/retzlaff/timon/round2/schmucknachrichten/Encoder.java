@@ -3,7 +3,7 @@ package cc.retzlaff.timon.round2.schmucknachrichten;
 import java.util.*;
 
 public class Encoder {
-    public static Map<Character, String> generateTable(final String msg, final int colorCount) {
+    public static Map<Character, String> generateTable(final String msg, final Integer[] colorIndices) {
         Map<Character, Integer> counts = new HashMap<>();
         final char[] chars = msg.toCharArray();
         for (char curr : chars) {
@@ -14,10 +14,10 @@ public class Encoder {
             }
         }
 
-        List<Node> rootNodes = generateTree(counts, colorCount);
+        List<Node> rootNodes = generateTree(counts, colorIndices.length);
 
         for (int i = 0; i < rootNodes.size(); i++) {
-            rootNodes.get(i).assignCodesRecursively("", i);
+            rootNodes.get(i).assignCodesRecursively("", colorIndices[i], colorIndices);
         }
 
         return getTable(rootNodes);
@@ -60,6 +60,7 @@ public class Encoder {
         int[] lowestValues = new int[colorCount];
         Arrays.fill(lowestValues, Integer.MAX_VALUE);
 
+        //TODO add sorting
         for (int i = 0; i < nodes.size(); i++) {
             final Node node = nodes.get(i);
             addValue(node, i, lowestIndices, lowestValues);
