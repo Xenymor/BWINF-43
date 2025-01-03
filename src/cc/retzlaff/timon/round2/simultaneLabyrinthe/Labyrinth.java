@@ -234,23 +234,25 @@ public class Labyrinth {
             final int width = getWidth();
 
             g.setColor(Color.GREEN);
-            g.fillRect(0, 0, fieldSize / 20, height);
-            g.fillRect(0, 0, width, fieldSize / 20);
+            final int lineSize = Math.max(fieldSize / 10, 1);
+            final int halfSize = lineSize / 2;
+            g.fillRect(0, 0, halfSize, height);
+            g.fillRect(0, 0, width, halfSize);
 
             for (int x = 0; x < labyrinth.width; x++) {
                 for (int y = 0; y < labyrinth.height; y++) {
                     Field field = fields[x][y];
                     if (field.hasRightWall) {
                         g.setColor(Color.GREEN);
-                        g.fillRect((x + 1) * fieldSize - fieldSize / 20, y * fieldSize, fieldSize / 10, fieldSize);
+                        g.fillRect((x + 1) * fieldSize - halfSize, y * fieldSize, lineSize, fieldSize);
                     }
                     if (field.hasLowerWall) {
                         g.setColor(Color.GREEN);
-                        g.fillRect(x * fieldSize, (y + 1) * fieldSize - fieldSize / 20, fieldSize, fieldSize / 10);
+                        g.fillRect(x * fieldSize, (y + 1) * fieldSize - halfSize, fieldSize, lineSize);
                     }
                     if (field.isHole) {
                         g.setColor(Color.BLACK);
-                        g.fillOval(x * fieldSize + fieldSize / 10, y * fieldSize + fieldSize / 10, fieldSize - fieldSize / 10 * 2, fieldSize - fieldSize / 10 * 2);
+                        g.fillOval(x * fieldSize + lineSize, y * fieldSize + lineSize, fieldSize - lineSize * 2, fieldSize - lineSize * 2);
                     }
                 }
             }
@@ -263,10 +265,10 @@ public class Labyrinth {
                     final Move currMove = path.get(i);
                     next = getField(currPos, currMove);
 
-                    final int x = Math.min(currPos.x, next.x) * fieldSize + fieldSize / 2 - fieldSize / 20;
-                    final int y = Math.min(currPos.y, next.y) * fieldSize + fieldSize / 2 - fieldSize / 20;
-                    final int rectWidth = (Math.abs(next.x - currPos.x)) * fieldSize + fieldSize / 10;
-                    final int rectHeight = (Math.abs(next.y - currPos.y)) * fieldSize + fieldSize / 10;
+                    final int x = Math.min(currPos.x, next.x) * fieldSize + fieldSize / 2 - halfSize;
+                    final int y = Math.min(currPos.y, next.y) * fieldSize + fieldSize / 2 - halfSize;
+                    final int rectWidth = (Math.abs(next.x - currPos.x)) * fieldSize + lineSize;
+                    final int rectHeight = (Math.abs(next.y - currPos.y)) * fieldSize + lineSize;
 
                     g.fillRect(x, y, rectWidth, rectHeight);
 
