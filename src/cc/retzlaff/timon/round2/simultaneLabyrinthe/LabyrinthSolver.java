@@ -54,6 +54,7 @@ public class LabyrinthSolver {
         toCheck.add(start);
         Vector4 finish = labyrinths.getFinishPos();
 
+        long steps = 0;
         boolean finishFound = false;
         while (!finishFound) {
             final Vector4 curr = toCheck.poll();
@@ -68,6 +69,9 @@ public class LabyrinthSolver {
                         break;
                     }
                 }
+            }
+            if (((steps++)&(1024*1024-1)) == 0) {
+                System.out.println("Queue: " + toCheck.size() + " (" + steps + ")");
             }
         }
 
