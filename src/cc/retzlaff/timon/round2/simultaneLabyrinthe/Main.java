@@ -17,10 +17,12 @@ public class Main {
         Labyrinths labyrinths = new Labyrinths(input);
 
         LabyrinthSolver solver = new LabyrinthSolver();
+        long startTime = System.nanoTime();
         List<VectorMove> path = solver.solveSimultaneously(labyrinths);
-        for (int i = 0; i < path.size() - 1; i++) {
+        System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
+        /*for (int i = 0; i < path.size() - 1; i++) {
             System.out.println(path.get(i).move());
-        }
+        }*/
         System.out.println("Length: " + path.size());
         labyrinths.drawSolution(getFieldSize(labyrinths), path);
     }
