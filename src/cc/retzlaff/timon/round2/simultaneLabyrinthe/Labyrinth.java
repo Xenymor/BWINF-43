@@ -112,7 +112,7 @@ public class Labyrinth {
         frame.setVisible(true);
     }
 
-    public void drawSolution(final int xOffset, final int fieldSize, final List<Vector2> path) {
+    public void drawSolution(final int xOffset, final int fieldSize, final List<Move> path) {
         if (frame == null) {
             draw(xOffset, fieldSize);
         }
@@ -186,7 +186,7 @@ public class Labyrinth {
     private static class MyFrame extends JFrame {
         final Labyrinth labyrinth;
         final int fieldSize;
-        List<Vector2> path = null;
+        List<Move> path = null;
 
         public MyFrame(final Labyrinth labyrinth, final int fieldSize) {
             this.labyrinth = labyrinth;
@@ -225,17 +225,84 @@ public class Labyrinth {
 
             if (path != null) {
                 g.setColor(Color.RED);
+                Vector2 currPos = labyrinth.getStartPos().clone();
+                Vector2 next;
                 for (int i = 0; i < path.size() - 1; i++) {
-                    final Vector2 curr = path.get(i);
-                    final Vector2 next = path.get(i + 1);
+                    final Move currMove = path.get(i);
+                    next = getField(currPos, currMove);
 
-                    final int x = Math.min(curr.x, next.x) * fieldSize + fieldSize / 2 - fieldSize / 20;
-                    final int y = Math.min(curr.y, next.y) * fieldSize + fieldSize / 2 - fieldSize / 20;
-                    final int rectWidth = (Math.abs(next.x - curr.x)) * fieldSize + fieldSize / 10;
-                    final int rectHeight = (Math.abs(next.y - curr.y)) * fieldSize + fieldSize / 10;
+                    final int x = Math.min(currPos.x, next.x) * fieldSize + fieldSize / 2 - fieldSize / 20;
+                    final int y = Math.min(currPos.y, next.y) * fieldSize + fieldSize / 2 - fieldSize / 20;
+                    final int rectWidth = (Math.abs(next.x - currPos.x)) * fieldSize + fieldSize / 10;
+                    final int rectHeight = (Math.abs(next.y - currPos.y)) * fieldSize + fieldSize / 10;
+
                     g.fillRect(x, y, rectWidth, rectHeight);
+
+                    if (fields[next.x][next.y].isHole) {
+                        next = labyrinth.getStartPos();
+                    }
+                    currPos = next;
                 }
             }
+        }
+
+        Vector2 getField(Vector2 pos, Move move) {
+            if (pos.equals(labyrinth.finish)) {
+                return pos;
+            }
+
+            Vector2 result;
+
+            final int x = pos.x;
+            final int y = pos.y;
+            switch (move) {
+                case LEFT -> {
+                    if (x > 0) {
+                        if (labyrinth.fields[x - 1][y].hasRightWall) {
+                            result = pos;
+                        } else {
+                            result = new Vector2(x - 1, y);
+                        }
+                    } else {
+                        result = pos;
+                    }
+                }
+                case RIGHT -> {
+                    if (x < labyrinth.width - 1) {
+                        if (labyrinth.fields[x][y].hasRightWall) {
+                            result = pos;
+                        } else {
+                            result = new Vector2(x + 1, y);
+                        }
+                    } else {
+                        result = pos;
+                    }
+                }
+                case UP -> {
+                    if (y > 0) {
+                        if (labyrinth.fields[x][y - 1].hasLowerWall) {
+                            result = pos;
+                        } else {
+                            result = new Vector2(x, y - 1);
+                        }
+                    } else {
+                        result = pos;
+                    }
+                }
+                case DOWN -> {
+                    if (y < labyrinth.height - 1) {
+                        if (labyrinth.fields[x][y].hasLowerWall) {
+                            result = pos;
+                        } else {
+                            result = new Vector2(x, y + 1);
+                        }
+                    } else {
+                        result = pos;
+                    }
+                }
+                default -> throw new IllegalArgumentException("Unknown move: " + move);
+            }
+            return result;
         }
     }
 }

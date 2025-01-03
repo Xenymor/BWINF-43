@@ -28,4 +28,9 @@ public class Vector2 {
     public String toString() {
         return "(" + x + ',' + y + ')';
     }
+
+    @Override
+    protected Vector2 clone() {
+        return new Vector2(x, y);
+    }
 }

@@ -32,25 +32,23 @@ public class Labyrinths {
 
     Move[] values = Move.values();
 
-    public Vector4[] getPossibleFields(final Vector4 curr) {
-        Vector4[] result = new Vector4[4];
+    public VectorMove[] getPossibleFields(final Vector4 curr) {
+        VectorMove[] result = new VectorMove[4];
         for (int i = 0; i < values.length; i++) {
             final Move move = values[i];
-            result[i] = new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move));
+            result[i] = new VectorMove(new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move)), move);
         }
         return result;
     }
 
-    public void drawSolution(final int fieldSize, final List<Vector4> path) {
-        List<Vector2> path1 = new ArrayList<>(path.size());
-        List<Vector2> path2 = new ArrayList<>(path.size());
+    public void drawSolution(final int fieldSize, final List<VectorMove> path) {
+        List<Move> path1 = new ArrayList<>(path.size());
 
-        for (Vector4 curr : path) {
-            path1.add(new Vector2(curr.x, curr.y));
-            path2.add(new Vector2(curr.z, curr.w));
+        for (VectorMove curr : path) {
+            path1.add(curr.move());
         }
 
         labyrinth1.drawSolution(0, fieldSize, path1);
-        labyrinth2.drawSolution(labyrinth1.width * fieldSize + fieldSize / 2, fieldSize, path2);
+        labyrinth2.drawSolution(labyrinth1.width * fieldSize + fieldSize / 2, fieldSize, path1);
     }
 }

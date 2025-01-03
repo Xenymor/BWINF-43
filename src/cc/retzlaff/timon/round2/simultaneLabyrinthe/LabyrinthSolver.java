@@ -45,9 +45,8 @@ public class LabyrinthSolver {
         return result;
     }
 
-    //TODO stop moving when finished
-    public List<Vector4> solveSimultaneously(final Labyrinths labyrinths) {
-        Map<Vector4, Vector4> previous = new HashMap<>();
+    public List<VectorMove> solveSimultaneously(final Labyrinths labyrinths) {
+        Map<Vector4, VectorMove> previous = new HashMap<>();
         Queue<Vector4> toCheck = new ArrayDeque<>();
 
         final Vector4 start = labyrinths.getStartPos();
@@ -58,12 +57,13 @@ public class LabyrinthSolver {
         boolean finishFound = false;
         while (!finishFound) {
             final Vector4 curr = toCheck.poll();
-            Vector4[] possibleNextFields = labyrinths.getPossibleFields(curr);
-            for (Vector4 next : possibleNextFields) {
-                if (!previous.containsKey(next)) {
-                    previous.put(next, curr);
-                    toCheck.add(next);
-                    if (finish.equals(next)) {
+            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(curr);
+            for (VectorMove next : possibleNextFields) {
+                if (!previous.containsKey(next.vector())) {
+                    final Vector4 nextVector = next.vector();
+                    previous.put(nextVector, new VectorMove(curr, next.move()));
+                    toCheck.add(nextVector);
+                    if (finish.equals(nextVector)) {
                         finishFound = true;
                         break;
                     }
@@ -71,11 +71,11 @@ public class LabyrinthSolver {
             }
         }
 
-        List<Vector4> result = new ArrayList<>();
-        Vector4 curr = finish;
+        List<VectorMove> result = new ArrayList<>();
+        VectorMove curr = new VectorMove(finish, null);
         result.add(curr);
         while (true) {
-            Vector4 next = previous.get(curr);
+            VectorMove next = previous.get(curr.vector());
             if (next == null) {
                 break;
             }
