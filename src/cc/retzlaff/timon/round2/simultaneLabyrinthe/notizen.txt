@@ -2,9 +2,9 @@ Labyrinthe:
 Breitensuche in 4d Labyrinth geht nur bis Beispiel 4 (dann zu langsam)
 A* mit simplem Maximum der Manhattan-Distanzen hat gleiches Problem
 Heuristiken:
-	-Maximum der Lösungen der einzelnen Labyrinthe
-	-Verrechnung der beiden Lösungswege (l1 + 1/(l2+1) (funktioniert)
-
+	- Maximum der Lösungen der einzelnen Labyrinthe
+	- Verrechnung der beiden Lösungswege (l1 + 1/(l2+1) (funktioniert)
+	- Geometrisches Mittel schlechter
 
 Erweiterungsideen:
 - n-Labyrinthe

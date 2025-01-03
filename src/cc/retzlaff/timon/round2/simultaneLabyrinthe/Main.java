@@ -20,7 +20,8 @@ public class Main {
         long startTime = System.nanoTime();
         List<VectorMove> path = solver.solveSimultaneously(labyrinths);
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
-        //155.47s
+        //92.84s
+        //Length 15113
         /*for (int i = 0; i < path.size() - 1; i++) {
             System.out.println(path.get(i).move());
         }*/

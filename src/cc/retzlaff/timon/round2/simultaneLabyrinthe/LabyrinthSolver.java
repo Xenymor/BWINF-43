@@ -58,11 +58,11 @@ public class LabyrinthSolver {
         final int bestCase = Math.max(solveLab1Len, solveLab2Len);
         final int badCase = solveLab1Len + solveLab2Len;
 
-        Map<Vector4, VectorMove> previous = new HashMap<>();
+        StateTracker tracker = new StateTracker();
         Queue<VectorScore> toCheck = new PriorityQueue<>(Comparator.comparingDouble(VectorScore::score));
 
         final Vector4 start = labyrinths.getStartPos();
-        previous.put(start, null);
+        tracker.put(start, null);
         toCheck.add(new VectorScore(start, getScore(start, labyrinths), 0));
         Vector4 finish = labyrinths.getFinishPos();
 
@@ -74,9 +74,9 @@ public class LabyrinthSolver {
             VectorMove[] possibleNextFields = labyrinths.getPossibleFields(vec);
             final int stepCount = curr.stepCount() + 1;
             for (VectorMove next : possibleNextFields) {
-                if (!previous.containsKey(next.vector())) {
+                if (!tracker.contains(next.vector())) {
                     final Vector4 nextVector = next.vector();
-                    previous.put(nextVector, new VectorMove(vec, next.move()));
+                    tracker.put(nextVector, new VectorMove(vec, next.move()));
                     toCheck.add(new VectorScore(nextVector, getScore(vec, labyrinths) + stepCount, stepCount));
                     if (finish.equals(nextVector)) {
                         finishFound = true;
@@ -98,7 +98,7 @@ public class LabyrinthSolver {
         VectorMove curr = new VectorMove(finish, null);
         result.add(curr);
         while (true) {
-            VectorMove next = previous.get(curr.vector());
+            VectorMove next = tracker.get(curr.vector());
             if (next == null) {
                 break;
             }
