@@ -6,6 +6,7 @@ import java.util.List;
 public class Labyrinths {
     final Labyrinth labyrinth1;
     final Labyrinth labyrinth2;
+    public final int labyrinthCount = 2;
 
     public Labyrinths(final List<String> input) {
         labyrinth1 = new Labyrinth(input);

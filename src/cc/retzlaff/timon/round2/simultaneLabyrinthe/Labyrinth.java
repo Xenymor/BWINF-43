@@ -10,13 +10,19 @@ public class Labyrinth {
     final int height;
 
     final Field[][] fields;
-    MyFrame frame = null;
     final int holeCount;
+    private final Vector2 finish;
+    private final Vector2 start;
+
+    MyFrame frame = null;
 
     public Labyrinth(final List<String> input) {
         String[] size = input.get(0).split(" ");
         width = Integer.parseInt(size[0]);
         height = Integer.parseInt(size[1]);
+
+        finish = new Vector2(width - 1, height - 1);
+        start = new Vector2(0, 0);
 
         fields = new Field[width][height];
 
@@ -58,7 +64,7 @@ public class Labyrinth {
     }
 
     public Vector2 getFinishPos() {
-        return new Vector2(width - 1, height - 1);
+        return finish;
     }
 
     public List<Vector2> getPossibleFields(final Vector2 curr) {
@@ -89,7 +95,7 @@ public class Labyrinth {
     }
 
     public Vector2 getStartPos() {
-        return new Vector2(0, 0);
+        return start;
     }
 
     public void draw(final int xOffset, final int fieldSize) {
@@ -100,6 +106,7 @@ public class Labyrinth {
         frame = new MyFrame(this, fieldSize);
         final int pixelWidth = width * fieldSize;
         final int pixelHeight = height * fieldSize;
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setBounds(xOffset, 0, pixelWidth, pixelHeight);
         frame.setUndecorated(true);
         frame.setVisible(true);
@@ -114,57 +121,66 @@ public class Labyrinth {
     }
 
     public Vector2 getField(final Vector2 curr, final Move move) {
+        if (curr.equals(finish)) {
+            return curr;
+        }
+
+        Vector2 result;
+
         final int x = curr.x;
         final int y = curr.y;
         switch (move) {
             case LEFT -> {
                 if (x > 0) {
                     if (fields[x - 1][y].hasRightWall) {
-                        return curr;
+                        result = curr;
                     } else {
-                        return new Vector2(x - 1, y);
+                        result = new Vector2(x - 1, y);
                     }
                 } else {
-                    return curr;
+                    result = curr;
                 }
             }
             case RIGHT -> {
                 if (x < width - 1) {
                     if (fields[x][y].hasRightWall) {
-                        return curr;
+                        result = curr;
                     } else {
-                        return new Vector2(x + 1, y);
+                        result = new Vector2(x + 1, y);
                     }
                 } else {
-                    return curr;
+                    result = curr;
                 }
             }
             case UP -> {
                 if (y > 0) {
                     if (fields[x][y - 1].hasLowerWall) {
-                        return curr;
+                        result = curr;
                     } else {
-                        return new Vector2(x, y - 1);
+                        result = new Vector2(x, y - 1);
                     }
                 } else {
-                    return curr;
+                    result = curr;
                 }
             }
             case DOWN -> {
                 if (y < height - 1) {
                     if (fields[x][y].hasLowerWall) {
-                        return curr;
+                        result = curr;
                     } else {
-                        return new Vector2(x, y + 1);
+                        result = new Vector2(x, y + 1);
                     }
                 } else {
-                    return curr;
+                    result = curr;
                 }
             }
-            default -> {
-                throw new IllegalArgumentException("Unknown move: " + move);
-            }
+            default -> throw new IllegalArgumentException("Unknown move: " + move);
         }
+
+        if (fields[result.x][result.y].isHole) {
+            return getStartPos();
+        }
+        return result;
     }
 
     private static class MyFrame extends JFrame {

@@ -1,0 +1,8 @@
+Labyrinthe:
+Breitensuche in 4d Labyrinth geht nur bis Beispiel 4 (dann zu langsam)
+
+
+Erweiterungsideen:
+- n-Labyrinthe
+- unterschiedlich große Labyrinthe
+- 
