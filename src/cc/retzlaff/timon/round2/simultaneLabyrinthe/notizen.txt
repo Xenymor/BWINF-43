@@ -1,6 +1,6 @@
 Labyrinthe:
 Breitensuche in 4d Labyrinth geht nur bis Beispiel 4 (dann zu langsam)
-
+A* mit simplem Maximum der Manhattan-Distanzen hat gleiches Problem
 
 Erweiterungsideen:
 - n-Labyrinthe
