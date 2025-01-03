@@ -5,6 +5,7 @@ Heuristiken:
 	- Maximum der Lösungen der einzelnen Labyrinthe
 	- Verrechnung der beiden Lösungswege (l1 + 1/(l2+1) (funktioniert)
 	- Geometrisches Mittel schlechter
+Einführen von BitSet (Zeit *0,6)
 
 Erweiterungsideen:
 - n-Labyrinthe
