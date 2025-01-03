@@ -47,30 +47,32 @@ public class LabyrinthSolver {
 
     public List<VectorMove> solveSimultaneously(final Labyrinths labyrinths) {
         Map<Vector4, VectorMove> previous = new HashMap<>();
-        Queue<Vector4> toCheck = new ArrayDeque<>();
+        Queue<VectorScore> toCheck = new PriorityQueue<>(Comparator.comparingDouble(VectorScore::score));
 
         final Vector4 start = labyrinths.getStartPos();
         previous.put(start, null);
-        toCheck.add(start);
+        toCheck.add(new VectorScore(start, getScore(start, labyrinths), 0));
         Vector4 finish = labyrinths.getFinishPos();
 
         long steps = 0;
         boolean finishFound = false;
         while (!finishFound) {
-            final Vector4 curr = toCheck.poll();
-            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(curr);
+            final VectorScore curr = toCheck.poll();
+            final Vector4 vec = curr.vector();
+            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(vec);
+            final int stepCount = curr.stepCount() + 1;
             for (VectorMove next : possibleNextFields) {
                 if (!previous.containsKey(next.vector())) {
                     final Vector4 nextVector = next.vector();
-                    previous.put(nextVector, new VectorMove(curr, next.move()));
-                    toCheck.add(nextVector);
+                    previous.put(nextVector, new VectorMove(vec, next.move()));
+                    toCheck.add(new VectorScore(nextVector, getScore(vec, labyrinths) + stepCount, stepCount));
                     if (finish.equals(nextVector)) {
                         finishFound = true;
                         break;
                     }
                 }
             }
-            if (((steps++)&(1024*1024-1)) == 0) {
+            if (((steps++) & (1024 * 1024 - 1)) == 0) {
                 System.out.println("Queue: " + toCheck.size() + " (" + steps + ")");
             }
         }
@@ -88,5 +90,11 @@ public class LabyrinthSolver {
         }
         Collections.reverse(result);
         return result;
+    }
+
+    private double getScore(final Vector4 pos, final Labyrinths labyrinths) {
+        final Vector2 finish1 = labyrinths.labyrinth1.getFinishPos();
+        final Vector2 finish2 = labyrinths.labyrinth2.getFinishPos();
+        return Math.max(Vector2.manhattanDist(pos.x, pos.y, finish1.x, finish1.y), Vector2.manhattanDist(pos.z, pos.w, finish2.x, finish2.y));
     }
 }

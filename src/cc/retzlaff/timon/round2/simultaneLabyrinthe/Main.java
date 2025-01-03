@@ -9,13 +9,12 @@ import java.util.List;
 public class Main {
 
     private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\examples\\" +
-            "labyrinthe3.txt";
+            "labyrinthe0.txt";
 
     public static void main(String[] args) throws IOException {
-        //TODO relative path
+        //TODO relative path in args
         List<String> input = Files.readAllLines(Path.of(inputFilePath));
         Labyrinths labyrinths = new Labyrinths(input);
-        //labyrinths.draw(FIELD_SIZE);
 
         LabyrinthSolver solver = new LabyrinthSolver();
         List<VectorMove> path = solver.solveSimultaneously(labyrinths);

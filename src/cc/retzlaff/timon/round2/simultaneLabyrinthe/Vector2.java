@@ -11,6 +11,10 @@ public class Vector2 {
         this.y = y;
     }
 
+    public static int manhattanDist(final int x1, final int y1, final int x2, final int y2) {
+        return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
