@@ -6,6 +6,8 @@ Heuristiken:
 	- Verrechnung der beiden Lösungswege (l1 + 1/(l2+1) (funktioniert)
 	- Geometrisches Mittel schlechter
 Einführen von BitSet (Zeit *0,6)
+Map durch Array ersetzen (Zeit *0,25)
+	Problem nur 128*128 möglich und 10gb RAM benötigt
 
 Erweiterungsideen:
 - n-Labyrinthe
