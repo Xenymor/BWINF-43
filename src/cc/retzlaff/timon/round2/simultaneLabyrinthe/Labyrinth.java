@@ -2,8 +2,9 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 public class Labyrinth {
     final int width;
@@ -16,10 +17,14 @@ public class Labyrinth {
 
     MyFrame frame = null;
 
+    final int[][] dists;
+
     public Labyrinth(final List<String> input) {
         String[] size = input.get(0).split(" ");
         width = Integer.parseInt(size[0]);
         height = Integer.parseInt(size[1]);
+
+        dists = new int[width][height];
 
         finish = new Vector2(width - 1, height - 1);
         start = new Vector2(0, 0);
@@ -181,6 +186,33 @@ public class Labyrinth {
             return getStartPos();
         }
         return result;
+    }
+
+    public void generateDists() {
+        Queue<Vector2> toCheck = new ArrayDeque<>();
+        Set<Vector2> queued = new HashSet<>();
+
+        toCheck.add(getFinishPos());
+        while (toCheck.size() > 0) {
+            Vector2 curr = toCheck.poll();
+            int dist = dists[curr.x][curr.y] + 1;
+            List<Vector2> neighbours = getPossibleFields(curr);
+            for (Vector2 neighbour : neighbours) {
+                if (!queued.contains(neighbour)) {
+                    queued.add(neighbour);
+                    toCheck.add(neighbour);
+                    dists[neighbour.x][neighbour.y] = dist;
+                }
+            }
+        }
+    }
+
+    public int getDist(final int x, final int y) {
+        return dists[x][y];
+    }
+
+    public int getDist(final Vector2 pos) {
+        return getDist(pos.x, pos.y);
     }
 
     private static class MyFrame extends JFrame {

@@ -14,6 +14,7 @@ public class LabyrinthSolver {
         toCheck.add(start);
         Vector2 finish = labyrinth.getFinishPos();
 
+        long steps = 0;
         boolean finishFound = false;
         while (!finishFound) {
             final Vector2 curr = toCheck.poll();
@@ -27,6 +28,9 @@ public class LabyrinthSolver {
                         break;
                     }
                 }
+            }
+            if (((steps++) & (1024 * 1024 - 1)) == 0) {
+                System.out.println("Queue: " + toCheck.size() + " (" + steps + ")");
             }
         }
 
@@ -46,6 +50,14 @@ public class LabyrinthSolver {
     }
 
     public List<VectorMove> solveSimultaneously(final Labyrinths labyrinths) {
+        labyrinths.generateDists();
+        final int solveLab1Len = labyrinths.labyrinth1.getDist(labyrinths.labyrinth1.getStartPos());
+        final int solveLab2Len = labyrinths.labyrinth2.getDist(labyrinths.labyrinth2.getStartPos());
+        System.out.println("Lab1 Best way: " + solveLab1Len);
+        System.out.println("Lab2 Best way: " + solveLab2Len);
+        final int bestCase = Math.max(solveLab1Len, solveLab2Len);
+        final int badCase = solveLab1Len + solveLab2Len;
+
         Map<Vector4, VectorMove> previous = new HashMap<>();
         Queue<VectorScore> toCheck = new PriorityQueue<>(Comparator.comparingDouble(VectorScore::score));
 
@@ -73,7 +85,12 @@ public class LabyrinthSolver {
                 }
             }
             if (((steps++) & (1024 * 1024 - 1)) == 0) {
-                System.out.println("Queue: " + toCheck.size() + " (" + steps + ")");
+                final VectorScore top = toCheck.peek();
+                System.out.println(
+                        "Queue: bestWayLen = " + top.stepCount() + " + " + (top.score() - top.stepCount())
+                                + " Progress: " + ((int) ((top.score() - bestCase) * 10000 / (badCase - bestCase))) / 100F + "%"
+                                + " // queueLen = " + toCheck.size() + " (" + steps + ")"
+                );
             }
         }
 
@@ -93,8 +110,8 @@ public class LabyrinthSolver {
     }
 
     private double getScore(final Vector4 pos, final Labyrinths labyrinths) {
-        final Vector2 finish1 = labyrinths.labyrinth1.getFinishPos();
-        final Vector2 finish2 = labyrinths.labyrinth2.getFinishPos();
-        return Math.max(Vector2.manhattanDist(pos.x, pos.y, finish1.x, finish1.y), Vector2.manhattanDist(pos.z, pos.w, finish2.x, finish2.y));
+        final int dist1 = labyrinths.labyrinth1.getDist(pos.x, pos.y);
+        final int dist2 = labyrinths.labyrinth2.getDist(pos.z, pos.w);
+        return Math.max(dist1, dist2) - 1d / (Math.min(dist1, dist2) + 1);
     }
 }

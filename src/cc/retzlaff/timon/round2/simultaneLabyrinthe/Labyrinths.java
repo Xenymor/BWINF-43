@@ -51,4 +51,9 @@ public class Labyrinths {
         labyrinth1.drawSolution(0, fieldSize, path1);
         labyrinth2.drawSolution(labyrinth1.width * fieldSize + fieldSize / 2, fieldSize, path1);
     }
+
+    public void generateDists() {
+        labyrinth1.generateDists();
+        labyrinth2.generateDists();
+    }
 }
