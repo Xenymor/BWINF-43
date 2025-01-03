@@ -27,8 +27,9 @@ public class Main {
 
     private static int getFieldSize(final Labyrinths labyrinths) {
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.getWidth() / (labyrinths.labyrinth1.width * labyrinths.labyrinthCount) < screenSize.getHeight() / labyrinths.labyrinth1.height) {
-            return (int) (screenSize.getWidth() * 0.75 / labyrinths.labyrinth1.width);
+        final double fieldWidth = labyrinths.labyrinth1.width * labyrinths.labyrinthCount + 0.5;
+        if (screenSize.getWidth() / fieldWidth < screenSize.getHeight() / labyrinths.labyrinth1.height) {
+            return (int) (screenSize.getWidth() * 0.75 / fieldWidth);
         } else {
             return (int) (screenSize.getHeight() * 0.75 / labyrinths.labyrinth1.height);
         }
