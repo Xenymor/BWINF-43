@@ -11,6 +11,7 @@ public class Labyrinth {
 
     final Field[][] fields;
     MyFrame frame = null;
+    final int holeCount;
 
     public Labyrinth(final List<String> input) {
         String[] size = input.get(0).split(" ");
@@ -44,7 +45,7 @@ public class Labyrinth {
         }
         offset += height - 1;
 
-        int holeCount = Integer.parseInt(input.get(offset));
+        holeCount = Integer.parseInt(input.get(offset));
         offset++;
 
         for (int i = 0; i < holeCount; i++) {
@@ -65,22 +66,22 @@ public class Labyrinth {
         final int y = curr.y;
         final int x = curr.x;
         if (y > 0) {
-            if (!fields[x][y - 1].hasLowerWall()) {
+            if (!fields[x][y - 1].hasLowerWall) {
                 result.add(new Vector2(x, y - 1));
             }
         }
         if (y < height) {
-            if (!fields[x][y].hasLowerWall()) {
+            if (!fields[x][y].hasLowerWall) {
                 result.add(new Vector2(x, y + 1));
             }
         }
         if (x > 0) {
-            if (!fields[x - 1][y].hasRightWall()) {
+            if (!fields[x - 1][y].hasRightWall) {
                 result.add(new Vector2(x - 1, y));
             }
         }
         if (x < width) {
-            if (!fields[x][y].hasRightWall()) {
+            if (!fields[x][y].hasRightWall) {
                 result.add(new Vector2(x + 1, y));
             }
         }
@@ -112,6 +113,60 @@ public class Labyrinth {
         frame.repaint(10);
     }
 
+    public Vector2 getField(final Vector2 curr, final Move move) {
+        final int x = curr.x;
+        final int y = curr.y;
+        switch (move) {
+            case LEFT -> {
+                if (x > 0) {
+                    if (fields[x - 1][y].hasRightWall) {
+                        return curr;
+                    } else {
+                        return new Vector2(x - 1, y);
+                    }
+                } else {
+                    return curr;
+                }
+            }
+            case RIGHT -> {
+                if (x < width - 1) {
+                    if (fields[x][y].hasRightWall) {
+                        return curr;
+                    } else {
+                        return new Vector2(x + 1, y);
+                    }
+                } else {
+                    return curr;
+                }
+            }
+            case UP -> {
+                if (y > 0) {
+                    if (fields[x][y - 1].hasLowerWall) {
+                        return curr;
+                    } else {
+                        return new Vector2(x, y - 1);
+                    }
+                } else {
+                    return curr;
+                }
+            }
+            case DOWN -> {
+                if (y < height - 1) {
+                    if (fields[x][y].hasLowerWall) {
+                        return curr;
+                    } else {
+                        return new Vector2(x, y + 1);
+                    }
+                } else {
+                    return curr;
+                }
+            }
+            default -> {
+                throw new IllegalArgumentException("Unknown move: " + move);
+            }
+        }
+    }
+
     private static class MyFrame extends JFrame {
         final Labyrinth labyrinth;
         final int fieldSize;
@@ -137,15 +192,15 @@ public class Labyrinth {
             for (int x = 0; x < labyrinth.width; x++) {
                 for (int y = 0; y < labyrinth.height; y++) {
                     Field field = fields[x][y];
-                    if (field.hasRightWall()) {
+                    if (field.hasRightWall) {
                         g.setColor(Color.GREEN);
                         g.fillRect((x + 1) * fieldSize - fieldSize / 20, y * fieldSize, fieldSize / 10, fieldSize);
                     }
-                    if (field.hasLowerWall()) {
+                    if (field.hasLowerWall) {
                         g.setColor(Color.GREEN);
                         g.fillRect(x * fieldSize, (y + 1) * fieldSize - fieldSize / 20, fieldSize, fieldSize / 10);
                     }
-                    if (field.isHole()) {
+                    if (field.isHole) {
                         g.setColor(Color.BLACK);
                         g.fillOval(x * fieldSize + fieldSize / 10, y * fieldSize + fieldSize / 10, fieldSize - fieldSize / 10 * 2, fieldSize - fieldSize / 10 * 2);
                     }

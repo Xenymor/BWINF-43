@@ -45,4 +45,44 @@ public class LabyrinthSolver {
         return result;
     }
 
+    //TODO stop moving when finished
+    public List<Vector4> solveSimultaneously(final Labyrinths labyrinths) {
+        Map<Vector4, Vector4> previous = new HashMap<>();
+        Queue<Vector4> toCheck = new ArrayDeque<>();
+
+        final Vector4 start = labyrinths.getStartPos();
+        previous.put(start, null);
+        toCheck.add(start);
+        Vector4 finish = labyrinths.getFinishPos();
+
+        boolean finishFound = false;
+        while (!finishFound) {
+            final Vector4 curr = toCheck.poll();
+            Vector4[] possibleNextFields = labyrinths.getPossibleFields(curr);
+            for (Vector4 next : possibleNextFields) {
+                if (!previous.containsKey(next)) {
+                    previous.put(next, curr);
+                    toCheck.add(next);
+                    if (finish.equals(next)) {
+                        finishFound = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<Vector4> result = new ArrayList<>();
+        Vector4 curr = finish;
+        result.add(curr);
+        while (true) {
+            Vector4 next = previous.get(curr);
+            if (next == null) {
+                break;
+            }
+            result.add(next);
+            curr = next;
+        }
+        Collections.reverse(result);
+        return result;
+    }
 }
