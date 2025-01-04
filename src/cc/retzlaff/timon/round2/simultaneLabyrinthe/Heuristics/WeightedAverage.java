@@ -20,6 +20,6 @@ public class WeightedAverage implements Heuristic {
 
     @Override
     public String getName() {
-        return "WeightedAverage: " + Math.round(higherWeight * 1000) / 1000 + "-" + Math.round(lowerWeight * 1000) / 1000;
+        return "WeightedAverage: " + Math.round(higherWeight * 1000) / 1000d + "-" + Math.round(lowerWeight * 1000) / 1000d;
     }
 }
