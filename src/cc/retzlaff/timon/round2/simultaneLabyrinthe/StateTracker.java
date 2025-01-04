@@ -1,19 +1,19 @@
 package cc.retzlaff.timon.round2.simultaneLabyrinthe;
 
-import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StateTracker {
-    private final VectorMove[] previous;
-    private final BitSet visited;
-
+    private final Map<Vector4, VectorMove> previous;
+    private final MyBitSet visited;
 
     public StateTracker() {
-        previous = new VectorMove[Integer.MAX_VALUE/2];
-        visited = new BitSet(Integer.MAX_VALUE);
+        previous = new HashMap<>();
+        visited = new MyBitSet(0x1_0000_0000L);
     }
 
     public VectorMove get(final Vector4 vector) {
-        return previous[getIndex(vector)];
+        return previous.get(vector);
     }
 
     public boolean contains(final Vector4 vector) {
@@ -21,17 +21,27 @@ public class StateTracker {
     }
 
     public void put(final Vector4 key, final VectorMove value) {
-        try {
-            previous[getIndex(key)] = value;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            System.out.println(key);
-            throw e;
-        }
+        previous.put(key, value);
         visited.set(getIndex(key));
     }
 
-    private int getIndex(final Vector4 key) {
-        return ((((key.x << 7) + key.y << 7) + key.z << 7) + key.w);
+    private long getIndex(final Vector4 key) {
+        return (((((long) key.x << 8) + key.y << 8) + key.z << 8) + key.w);
+    }
+
+    private static class MyBitSet {
+        private final long[] words;
+
+        public MyBitSet(final long capacity) {
+            this.words = new long[(int) (capacity / 64 + 1)];
+        }
+
+        public void set(final long bitIndex) {
+            words[(int) (bitIndex >> 6)] |= (1L << bitIndex);
+        }
+
+        public boolean get(final long index) {
+            return (words[(int) (index >> 6)] & (1L << index)) != 0;
+        }
     }
 }

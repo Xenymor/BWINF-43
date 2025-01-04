@@ -189,19 +189,36 @@ public class Labyrinth {
     }
 
     public void generateDists() {
-        Queue<Vector2> toCheck = new ArrayDeque<>();
-        Set<Vector2> queued = new HashSet<>();
+        Queue<Vector2> queue = new ArrayDeque<>();
+        Set<Vector2> found = new HashSet<>();
 
-        toCheck.add(getFinishPos());
-        while (toCheck.size() > 0) {
-            Vector2 curr = toCheck.poll();
+        final Vector2 finishPos = getFinishPos();
+        queue.add(finishPos);
+        found.add(finishPos);
+        while (queue.size() > 0) {
+            Vector2 curr = queue.poll();
             int dist = dists[curr.x][curr.y] + 1;
+            if (fields[curr.x][curr.y].isHole) {
+                dist--;
+            }
             List<Vector2> neighbours = getPossibleFields(curr);
+            if (curr.equals(start)) {
+                for (int x = 0; x < fields.length; x++) {
+                    final Field[] row = fields[x];
+                    for (int y = 0; y < row.length; y++) {
+                        if (row[y].isHole) {
+                            neighbours.add(new Vector2(x, y));
+                        }
+                    }
+                }
+            }
             for (Vector2 neighbour : neighbours) {
-                if (!queued.contains(neighbour)) {
-                    queued.add(neighbour);
-                    toCheck.add(neighbour);
-                    dists[neighbour.x][neighbour.y] = dist;
+                if (!found.contains(neighbour)) {
+                    if (!fields[neighbour.x][neighbour.y].isHole) {
+                        found.add(neighbour);
+                        queue.add(neighbour);
+                        dists[neighbour.x][neighbour.y] = dist;
+                    }
                 }
             }
         }
@@ -261,10 +278,18 @@ public class Labyrinth {
                 g.setColor(Color.RED);
                 Vector2 currPos = labyrinth.getStartPos().clone();
                 Vector2 next;
+                int count = 0;
                 for (int i = 0; i < path.size() - 1; i++) {
                     final Move currMove = path.get(i);
                     next = getField(currPos, currMove);
 
+                    if (next.equals(currPos)) {
+                        count++;
+                        g.setColor(Color.BLUE);
+                        g.fillOval(currPos.x * fieldSize + fieldSize / 2 - lineSize * 2, currPos.y * fieldSize + fieldSize / 2 - lineSize * 2, lineSize * 4, lineSize * 4);
+                    }
+
+                    g.setColor(Color.RED);
                     final int x = Math.min(currPos.x, next.x) * fieldSize + fieldSize / 2 - halfSize;
                     final int y = Math.min(currPos.y, next.y) * fieldSize + fieldSize / 2 - halfSize;
                     final int rectWidth = (Math.abs(next.x - currPos.x)) * fieldSize + lineSize;
@@ -277,6 +302,7 @@ public class Labyrinth {
                     }
                     currPos = next;
                 }
+                System.out.println(count);
             }
         }
 

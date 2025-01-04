@@ -17,6 +17,14 @@ public class Labyrinths {
         labyrinth2 = new Labyrinth(input);
     }
 
+    public Labyrinth getLabyrinth1() {
+        return labyrinth1;
+    }
+
+    public Labyrinth getLabyrinth2() {
+        return labyrinth2;
+    }
+
     public void draw(final int fieldSize) {
         labyrinth1.draw(0, fieldSize);
         labyrinth2.draw(labyrinth1.width * fieldSize + fieldSize / 2, fieldSize);
@@ -36,7 +44,7 @@ public class Labyrinths {
         VectorMove[] result = new VectorMove[4];
         for (int i = 0; i < values.length; i++) {
             final Move move = values[i];
-            result[i] = new VectorMove(new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move)), move);
+            result[i] = new VectorMove(new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move)), move, 0);
         }
         return result;
     }

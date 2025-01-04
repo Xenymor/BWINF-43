@@ -3,10 +3,10 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe;
 import java.util.Objects;
 
 public class Vector4 {
-    final int x;
-    final int y;
-    final int z;
-    final int w;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final int w;
 
     public Vector4(final int x, final int y, final int z, final int w) {
         this.x = x;

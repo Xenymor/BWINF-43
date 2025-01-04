@@ -1,6 +1,8 @@
 package cc.retzlaff.timon.round2.simultaneLabyrinthe;
 
 
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics.Heuristic;
+
 import java.util.*;
 
 public class LabyrinthSolver {
@@ -49,12 +51,16 @@ public class LabyrinthSolver {
         return result;
     }
 
-    public List<VectorMove> solveSimultaneously(final Labyrinths labyrinths) {
+    public List<VectorMove> solveSimultaneously(final Labyrinths labyrinths, Heuristic heuristic, List<VectorMove> debug) {
         labyrinths.generateDists();
         final int solveLab1Len = labyrinths.labyrinth1.getDist(labyrinths.labyrinth1.getStartPos());
         final int solveLab2Len = labyrinths.labyrinth2.getDist(labyrinths.labyrinth2.getStartPos());
         System.out.println("Lab1 Best way: " + solveLab1Len);
         System.out.println("Lab2 Best way: " + solveLab2Len);
+        if (Math.min(solveLab1Len, solveLab2Len) == 0) {
+            System.out.println("There is no solution");
+        }
+
         final int bestCase = Math.max(solveLab1Len, solveLab2Len);
         final int badCase = solveLab1Len + solveLab2Len;
 
@@ -62,8 +68,8 @@ public class LabyrinthSolver {
         Queue<VectorScore> toCheck = new PriorityQueue<>(Comparator.comparingDouble(VectorScore::score));
 
         final Vector4 start = labyrinths.getStartPos();
-        tracker.put(start, null);
-        toCheck.add(new VectorScore(start, getScore(start, labyrinths), 0));
+        tracker.put(start, new VectorMove(start, Move.DOWN, 0));
+        toCheck.add(new VectorScore(start, heuristic.getScore(start, labyrinths), 0));
         Vector4 finish = labyrinths.getFinishPos();
 
         long steps = 0;
@@ -71,17 +77,22 @@ public class LabyrinthSolver {
         while (!finishFound) {
             final VectorScore curr = toCheck.poll();
             final Vector4 vec = curr.vector();
+            if (vec.equals(finish)) {
+                finishFound = true;
+                continue;
+            }
             VectorMove[] possibleNextFields = labyrinths.getPossibleFields(vec);
             final int stepCount = curr.stepCount() + 1;
             for (VectorMove next : possibleNextFields) {
-                if (!tracker.contains(next.vector())) {
-                    final Vector4 nextVector = next.vector();
-                    tracker.put(nextVector, new VectorMove(vec, next.move()));
-                    toCheck.add(new VectorScore(nextVector, getScore(vec, labyrinths) + stepCount, stepCount));
-                    if (finish.equals(nextVector)) {
-                        finishFound = true;
-                        break;
+                if (tracker.contains(next.vector())) {
+                    final VectorMove vectorMove = tracker.get(next.vector());
+                    if (vectorMove.stepCount() > stepCount) {
+                        tracker.put(next.vector(), new VectorMove(vec, next.move(), stepCount));
                     }
+                } else {
+                    final Vector4 nextVector = next.vector();
+                    tracker.put(nextVector, new VectorMove(vec, next.move(), stepCount));
+                    toCheck.add(new VectorScore(nextVector, heuristic.getScore(nextVector, labyrinths) + stepCount, stepCount));
                 }
             }
             if (((steps++) & (1024 * 1024 - 1)) == 0) {
@@ -94,12 +105,24 @@ public class LabyrinthSolver {
             }
         }
 
+        final List<VectorMove> path = getPath(tracker, finish);
+        for (int i = 0; i < path.size(); i++) {
+            final VectorMove vectorMove = path.get(i);
+            final Vector4 field = vectorMove.vector();
+            if (heuristic.getScore(field, labyrinths) > path.size() - i - 1) {
+                System.out.println("Alarm");
+            }
+        }
+        return path;
+    }
+
+    private List<VectorMove> getPath(final StateTracker tracker, final Vector4 finish) {
         List<VectorMove> result = new ArrayList<>();
-        VectorMove curr = new VectorMove(finish, null);
+        VectorMove curr = new VectorMove(finish, null, 0);
         result.add(curr);
         while (true) {
             VectorMove next = tracker.get(curr.vector());
-            if (next == null) {
+            if (next.vector().equals(curr.vector())) {
                 break;
             }
             result.add(next);
@@ -107,11 +130,5 @@ public class LabyrinthSolver {
         }
         Collections.reverse(result);
         return result;
-    }
-
-    private double getScore(final Vector4 pos, final Labyrinths labyrinths) {
-        final int dist1 = labyrinths.labyrinth1.getDist(pos.x, pos.y);
-        final int dist2 = labyrinths.labyrinth2.getDist(pos.z, pos.w);
-        return Math.max(dist1, dist2) - 1d / (Math.min(dist1, dist2) + 1);
     }
 }

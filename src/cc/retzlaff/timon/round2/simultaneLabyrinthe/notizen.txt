@@ -8,6 +8,9 @@ Heuristiken:
 Einführen von BitSet (Zeit *0,6)
 Map durch Array ersetzen (Zeit *0,25)
 	Problem nur 128*128 möglich und 10gb RAM benötigt
+Array durch Map ersetzen, weil größere Maps erwünscht
+Heuristik sqrt((a^2+b^2)/2)) um faktor 2,1 schlechter
+Überraschenderweise Check benötigt für kürzere Distanz beim zweiten mal erreichen
 
 Erweiterungsideen:
 - n-Labyrinthe
