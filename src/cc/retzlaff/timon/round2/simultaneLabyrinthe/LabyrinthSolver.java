@@ -88,6 +88,7 @@ public class LabyrinthSolver {
                     final VectorMove vectorMove = tracker.get(next.vector());
                     if (vectorMove.stepCount() > stepCount) {
                         tracker.put(next.vector(), new VectorMove(vec, next.move(), stepCount));
+                        toCheck.add(new VectorScore(next.vector(), heuristic.getScore(next.vector(), labyrinths) + stepCount, stepCount));
                     }
                 } else {
                     final Vector4 nextVector = next.vector();
@@ -104,6 +105,22 @@ public class LabyrinthSolver {
                 );
             }
         }
+
+        /*if (debug != null) {
+            Collections.reverse(debug);
+            for (VectorMove vectorMove : debug) {
+                final Vector4 vector = vectorMove.vector();
+                for (VectorScore vectorScore : toCheck) {
+                    if (vectorScore.vector().equals(vector)) {
+                        VectorMove move = tracker.get(vector);
+                        double score = heuristic.getScore(vector, labyrinths);
+                        System.out.println(vector + ": " + move.stepCount() + " + " + score + " = " + (score + move.stepCount()) + " \\\\ " + labyrinths.getLabyrinth1().getDist(vector.x, vector.y) + "; " + labyrinths.getLabyrinth2().getDist(vector.z, vector.w));
+                        break;
+                    }
+                }
+            }
+            Collections.reverse(debug);
+        }*/
 
         final List<VectorMove> path = getPath(tracker, finish);
         for (int i = 0; i < path.size(); i++) {
