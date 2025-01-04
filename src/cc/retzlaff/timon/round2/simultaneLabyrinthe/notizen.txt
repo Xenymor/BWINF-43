@@ -11,6 +11,7 @@ Map durch Array ersetzen (Zeit *0,25)
 Array durch Map ersetzen, weil größere Maps erwünscht
 Heuristik sqrt((a^2+b^2)/2)) um faktor 2,1 schlechter
 Überraschenderweise Check benötigt für kürzere Distanz beim zweiten mal erreichen
+Bug: Kürzere Distanzen nicht nochmal überprüft
 
 Erweiterungsideen:
 - n-Labyrinthe

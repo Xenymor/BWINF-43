@@ -12,7 +12,7 @@ import java.util.List;
 public class Main {
 
     private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\examples\\" +
-            "labyrinthe7B.txt";
+            "labyrinthe4.txt";
 
     public static void main(String[] args) throws IOException {
         //TODO relative path in args
@@ -28,6 +28,7 @@ public class Main {
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
         //85.30s
         //Length 14388
+        // Length: 14385
         /*for (int i = 0; i < path.size() - 1; i++) {
             System.out.println(path.get(i).move() + path.get(i).vector().toString());
         }*/
