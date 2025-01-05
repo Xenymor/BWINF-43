@@ -13,6 +13,7 @@ Heuristik sqrt((a^2+b^2)/2)) um faktor 2,1 schlechter
 Überraschenderweise Check benötigt für kürzere Distanz beim zweiten mal erreichen
 Bug: Kürzere Distanzen nicht nochmal überprüft
 Heuristik Weighted Average besser, bei Gewichten 0,999 und 0,001
+Einträge von Map removen, wenn in Queue angeguckt und Vorgänger als LinkedList speichern
 
 Erweiterungsideen:
 - n-Labyrinthe

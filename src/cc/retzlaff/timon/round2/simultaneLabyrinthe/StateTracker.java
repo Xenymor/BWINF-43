@@ -33,6 +33,10 @@ public class StateTracker {
         return (((((long) key.x << 8) + key.y << 8) + key.z << 8) + key.w);
     }
 
+    public int getMapSize() {
+        return previous.size();
+    }
+
     private static class MyBitSet {
         private final long[] words;
 

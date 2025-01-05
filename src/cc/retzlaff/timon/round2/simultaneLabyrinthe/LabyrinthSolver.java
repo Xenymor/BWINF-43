@@ -111,6 +111,7 @@ public class LabyrinthSolver {
                         "Queue: bestWayLen = " + top.getStepCount() + " + " + (top.getScore() - top.getStepCount())
                                 + " Progress: " + ((int) ((top.getScore() - bestCase) * 10000 / (badCase - bestCase))) / 100F + "%"
                                 + " // queueLen = " + toCheck.size() + " (" + steps + ")"
+                                + " // mapSize = " + tracker.getMapSize()
                 );
             }
         }

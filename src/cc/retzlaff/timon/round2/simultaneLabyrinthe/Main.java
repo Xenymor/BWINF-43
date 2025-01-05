@@ -27,7 +27,7 @@ public class Main {
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
         System.out.println("Using heuristic: " + heuristic.getName());
         /*
-        Time needed: 27.374838s
+        Time needed: 26.0843s
         Using heuristic: WeightedAverage: 0.999-0.001
         Length: 14385
         */
