@@ -5,9 +5,9 @@ public record VectorMove(Vector4 vector,
     @Override
     public String toString() {
         return "VectorMove{" +
-                "vector=" + vector +
+                "getVector=" + vector +
                 ", move=" + move +
-                ", stepCount=" + stepCount +
+                ", getStepCount=" + stepCount +
                 '}';
     }
 }

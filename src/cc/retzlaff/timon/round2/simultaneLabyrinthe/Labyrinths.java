@@ -49,11 +49,11 @@ public class Labyrinths {
         return result;
     }
 
-    public void drawSolution(final int fieldSize, final List<VectorMove> path) {
+    public void drawSolution(final int fieldSize, final List<PositionData> path) {
         List<Move> path1 = new ArrayList<>(path.size());
 
-        for (VectorMove curr : path) {
-            path1.add(curr.move());
+        for (PositionData curr : path) {
+            path1.add(curr.move);
         }
 
         labyrinth1.drawSolution(0, fieldSize, path1);

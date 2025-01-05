@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StateTracker {
-    private final Map<Vector4, VectorMove> previous;
+    private final Map<Vector4, PositionData> previous;
     private final MyBitSet visited;
 
     public StateTracker() {
@@ -12,17 +12,21 @@ public class StateTracker {
         visited = new MyBitSet(0x1_0000_0000L);
     }
 
-    public VectorMove get(final Vector4 vector) {
+    public PositionData get(final Vector4 vector) {
         return previous.get(vector);
     }
 
-    public boolean contains(final Vector4 vector) {
+    public boolean hasSeen(final Vector4 vector) {
         return visited.get(getIndex(vector));
     }
 
-    public void put(final Vector4 key, final VectorMove value) {
+    public void put(final Vector4 key, final PositionData value) {
         previous.put(key, value);
         visited.set(getIndex(key));
+    }
+
+    public void removeFromMap(final Vector4 key) {
+        previous.remove(key);
     }
 
     private long getIndex(final Vector4 key) {

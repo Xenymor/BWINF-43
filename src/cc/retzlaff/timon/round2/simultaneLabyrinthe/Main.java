@@ -23,16 +23,16 @@ public class Main {
         LabyrinthSolver solver = new LabyrinthSolver();
         long startTime = System.nanoTime();
         final Heuristic heuristic = new WeightedAverage(0.999);
-        List<VectorMove> path = solver.solveSimultaneously(labyrinths, heuristic);
+        List<PositionData> path = solver.solveSimultaneously(labyrinths, heuristic);
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
         System.out.println("Using heuristic: " + heuristic.getName());
         /*
-        Time needed: 134.39076s
+        Time needed: 27.374838s
         Using heuristic: WeightedAverage: 0.999-0.001
         Length: 14385
         */
         /*for (int i = 0; i < path.size() - 1; i++) {
-            System.out.println(path.get(i).move() + path.get(i).vector().toString());
+            System.out.println(path.get(i).move() + path.get(i).getVector().toString());
         }*/
         System.out.println("Length: " + path.size());
         labyrinths.drawSolution(getFieldSize(labyrinths), path);
