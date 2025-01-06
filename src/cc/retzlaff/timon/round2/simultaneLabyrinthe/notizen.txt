@@ -20,3 +20,4 @@ Erweiterungsideen:
 - unterschiedlich große Labyrinthe
 - unterschiedliche Start/Endpunkte
 - Kann n Wände zerstören
+- Verschiedene Kosten pro Zug
