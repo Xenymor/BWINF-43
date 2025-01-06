@@ -12,7 +12,8 @@ import java.util.List;
 public class Main {
 
     private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\examples\\" +
-            "labyrinthe4.txt";
+            "labyrinthe7.txt";
+    public static final double SCREEN_PERCENTAGE = 0.75;
 
     public static void main(String[] args) throws IOException {
         //TODO relative path in args
@@ -27,14 +28,27 @@ public class Main {
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
         System.out.println("Using heuristic: " + heuristic.getName());
         /*
-        Time needed: 26.0843s
-        Using heuristic: WeightedAverage: 0.999-0.001
-        Length: 14385
+        4:
+            Time needed: 26.0843s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: 14384
+        5:
+            Time needed: 104.48041s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: 1308
+        6:
+            Time needed: 0.4779969s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: 1844
+        9:
+            Time needed: 54.312172s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: 1012
         */
-        for (int i = 0; i < path.size() - 1; i++) {
+        /*for (int i = 0; i < path.size() - 1; i++) {
             System.out.println(path.get(i).move + path.get(i).getVector().toString());
-        }
-        System.out.println("Length: " + path.size());
+        }*/
+        System.out.println("Length: " + (path.size() - 1));
         labyrinths.drawSolution(getFieldSize(labyrinths), path);
     }
 
@@ -42,9 +56,9 @@ public class Main {
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final double fieldWidth = labyrinths.labyrinth1.width * labyrinths.labyrinthCount + 0.5;
         if (screenSize.getWidth() / fieldWidth < screenSize.getHeight() / labyrinths.labyrinth1.height) {
-            return (int) (screenSize.getWidth() * 0.75 / fieldWidth);
+            return (int) (screenSize.getWidth() * SCREEN_PERCENTAGE / fieldWidth);
         } else {
-            return (int) (screenSize.getHeight() * 0.75 / labyrinths.labyrinth1.height);
+            return (int) (screenSize.getHeight() * SCREEN_PERCENTAGE / labyrinths.labyrinth1.height);
         }
     }
 }
