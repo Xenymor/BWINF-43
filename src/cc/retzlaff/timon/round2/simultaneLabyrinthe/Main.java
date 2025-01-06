@@ -40,6 +40,14 @@ public class Main {
             Time needed: 0.4779969s
             Using heuristic: WeightedAverage: 0.999-0.001
             Length: 1844
+        7:
+            Time needed: 0.0018915s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: -1
+        8:
+            Time needed: 74.77536s
+            Using heuristic: WeightedAverage: 0.999-0.001
+            Length: 472
         9:
             Time needed: 54.312172s
             Using heuristic: WeightedAverage: 0.999-0.001
