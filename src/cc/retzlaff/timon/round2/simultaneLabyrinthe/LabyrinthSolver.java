@@ -59,6 +59,7 @@ public class LabyrinthSolver {
         System.out.println("Lab2 Best way: " + solveLab2Len);
         if (Math.min(solveLab1Len, solveLab2Len) == 0) {
             System.out.println("There is no solution");
+            return new ArrayList<>();
         }
 
         final int bestCase = Math.max(solveLab1Len, solveLab2Len);
