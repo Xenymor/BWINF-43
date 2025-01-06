@@ -117,9 +117,10 @@ public class LabyrinthSolver {
         }
 
         final List<PositionData> path = getPath(finishData);
+        //TODO remove DEBUG Code
         for (int i = 0; i < path.size(); i++) {
-            final PositionData vectorMove = path.get(i);
-            final Vector4 field = vectorMove.getVector();
+            final PositionData data = path.get(i);
+            final Vector4 field = data.getVector();
             if (heuristic.getScore(field, labyrinths) > path.size() - i - 1) {
                 System.out.println("Alarm");
             }

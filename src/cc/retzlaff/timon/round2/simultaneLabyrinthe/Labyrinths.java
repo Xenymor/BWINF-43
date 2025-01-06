@@ -41,8 +41,8 @@ public class Labyrinths {
     Move[] values = Move.values();
 
     public VectorMove[] getPossibleFields(final Vector4 curr) {
-        VectorMove[] result = new VectorMove[4];
-        for (int i = 0; i < values.length; i++) {
+        VectorMove[] result = new VectorMove[values.length];
+        for (int i = 0; i < result.length; i++) {
             final Move move = values[i];
             result[i] = new VectorMove(new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move)), move, 0);
         }

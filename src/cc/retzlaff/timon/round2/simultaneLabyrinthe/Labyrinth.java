@@ -279,7 +279,7 @@ public class Labyrinth {
                 Vector2 currPos = labyrinth.getStartPos().clone();
                 Vector2 next;
                 int count = 0;
-                for (int i = 0; i < path.size() - 1; i++) {
+                for (int i = 1; i < path.size(); i++) {
                     final Move currMove = path.get(i);
                     next = getField(currPos, currMove);
 

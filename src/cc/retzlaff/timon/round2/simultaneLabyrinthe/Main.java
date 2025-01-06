@@ -31,9 +31,9 @@ public class Main {
         Using heuristic: WeightedAverage: 0.999-0.001
         Length: 14385
         */
-        /*for (int i = 0; i < path.size() - 1; i++) {
-            System.out.println(path.get(i).move() + path.get(i).getVector().toString());
-        }*/
+        for (int i = 0; i < path.size() - 1; i++) {
+            System.out.println(path.get(i).move + path.get(i).getVector().toString());
+        }
         System.out.println("Length: " + path.size());
         labyrinths.drawSolution(getFieldSize(labyrinths), path);
     }
