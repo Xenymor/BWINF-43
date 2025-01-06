@@ -14,6 +14,7 @@ Heuristik sqrt((a^2+b^2)/2)) um faktor 2,1 schlechter
 Bug: Kürzere Distanzen nicht nochmal überprüft
 Heuristik Weighted Average besser, bei Gewichten 0,999 und 0,001
 Einträge von Map removen, wenn in Queue angeguckt und Vorgänger als LinkedList speichern (5x schneller)(warum???)
+Weighted Average monoton -> Müssen Knoten nur einmal angucken
 
 Erweiterungsideen:
 - n-Labyrinthe
