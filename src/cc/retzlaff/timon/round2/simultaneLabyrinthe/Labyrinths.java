@@ -65,13 +65,4 @@ public class Labyrinths {
         labyrinth2.generateDists();
     }
 
-    public Move getMove(final Vector4 from, final Vector4 to) {
-        VectorMove[] possibleMoves = getPossibleFields(from);
-        for (VectorMove move : possibleMoves) {
-            if (move.vector().equals(to)) {
-                return move.move();
-            }
-        }
-        throw new IllegalArgumentException("Not connected: " + from + " to " + to);
-    }
 }
