@@ -1,7 +1,7 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.extensions.DifferentSizes.Heuristics;
 
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Labyrinths;
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Vector4;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.extensions.DifferentSizes.Labyrinths;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.extensions.DifferentSizes.Vector4;
 
 public class Max implements Heuristic {
 

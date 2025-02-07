@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.extensions.DifferentSizes;
 
 import java.util.Objects;
 

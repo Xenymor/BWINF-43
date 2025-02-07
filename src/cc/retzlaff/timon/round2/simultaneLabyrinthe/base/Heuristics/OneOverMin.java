@@ -1,7 +1,7 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Heuristics;
 
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Labyrinths;
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Vector4;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Labyrinths;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Vector4;
 
 public class OneOverMin implements Heuristic {
     public double getScore(final Vector4 pos, final Labyrinths labyrinths) {

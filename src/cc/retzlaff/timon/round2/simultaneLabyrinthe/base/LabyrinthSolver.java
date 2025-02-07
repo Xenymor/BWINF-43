@@ -1,7 +1,7 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 
 
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics.Heuristic;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Heuristics.Heuristic;
 
 import java.util.*;
 

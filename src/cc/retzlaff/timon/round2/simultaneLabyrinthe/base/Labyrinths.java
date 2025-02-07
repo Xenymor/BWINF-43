@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 
 import java.util.ArrayList;
 import java.util.List;

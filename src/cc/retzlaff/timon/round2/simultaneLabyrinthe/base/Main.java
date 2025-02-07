@@ -1,7 +1,7 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics.Heuristic;
-import cc.retzlaff.timon.round2.simultaneLabyrinthe.Heuristics.WeightedAverage;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Heuristics.Heuristic;
+import cc.retzlaff.timon.round2.simultaneLabyrinthe.base.Heuristics.WeightedAverage;
 
 import java.awt.*;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Main {
 
-    private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\examples\\" +
+    private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\extensions\\DifferentSizes\\examples" +
             "labyrinthe5.txt";
     public static final double SCREEN_PERCENTAGE = 0.75;
 

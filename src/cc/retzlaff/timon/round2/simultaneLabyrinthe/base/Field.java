@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.simultaneLabyrinthe;
+package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 
 public class Field {
     boolean hasRightWall = true;

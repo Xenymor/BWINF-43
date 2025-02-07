@@ -15,6 +15,7 @@ Bug: Kürzere Distanzen nicht nochmal überprüft
 Heuristik Weighted Average besser, bei Gewichten 0,999 und 0,001
 Einträge von Map removen, wenn in Queue angeguckt und Vorgänger als LinkedList speichern (5x schneller)(warum???)
 Weighted Average monoton -> Müssen Knoten nur einmal angucken
+Durch begrenzten Ram um 8s langsamer (dringelassen)
 
 Erweiterungsideen:
 - n-Labyrinthe
