@@ -16,6 +16,7 @@ Heuristik Weighted Average besser, bei Gewichten 0,999 und 0,001
 Einträge von Map removen, wenn in Queue angeguckt und Vorgänger als LinkedList speichern (5x schneller)(warum???)
 Weighted Average monoton -> Müssen Knoten nur einmal angucken
 Durch begrenzten Ram um 8s langsamer (dringelassen)
+Unterschiedlich große Labyrinthe in Erweiterung eingebaut (Könnte in normales integriert werden)
 
 Erweiterungsideen:
 - n-Labyrinthe
