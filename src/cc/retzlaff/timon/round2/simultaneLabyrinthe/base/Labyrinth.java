@@ -12,22 +12,31 @@ public class Labyrinth {
 
     final Field[][] fields;
     final int holeCount;
-    private final Vector2 finish;
-    private final Vector2 start;
+
+    private final Vector3 finish;
+    private final Vector2 finish2;
+
+    private final Vector3 start;
+    private final Vector2 start2;
 
     MyFrame frame = null;
 
-    final int[][] dists;
+    final int[][][] dists;
+    final int startJumpCount;
 
-    public Labyrinth(final List<String> input) {
+    public Labyrinth(final List<String> input, final int startJumpCount) {
+        this.startJumpCount = startJumpCount;
+
         String[] size = input.get(0).split(" ");
         width = Integer.parseInt(size[0]);
         height = Integer.parseInt(size[1]);
 
-        dists = new int[width][height];
+        dists = new int[width][height][startJumpCount + 1];
 
-        finish = new Vector2(width - 1, height - 1);
-        start = new Vector2(0, 0);
+        finish = new Vector3(width - 1, height - 1, 0);
+        finish2 = new Vector2(width - 1, height - 1);
+        start = new Vector3(0, 0, startJumpCount);
+        start2 = new Vector2(0, 0);
 
         fields = new Field[width][height];
 
@@ -68,38 +77,51 @@ public class Labyrinth {
         offset += holeCount;
     }
 
-    public Vector2 getFinishPos() {
+    public Vector3 getFinishPos() {
         return finish;
     }
 
-    public List<Vector2> getPossibleFields(final Vector2 curr) {
-        List<Vector2> result = new ArrayList<>(4);
+    public List<Vector3> getPossibleFields(final Vector3 curr) {
+        List<Vector3> result = new ArrayList<>(8);
         final int y = curr.y;
         final int x = curr.x;
+        final int z = curr.z;
         if (y > 0) {
             if (!fields[x][y - 1].hasLowerWall) {
-                result.add(new Vector2(x, y - 1));
+                result.add(new Vector3(x, y - 1, z));
+            } else if (z < startJumpCount) {
+                result.add(new Vector3(x, y - 1, z + 1));
             }
         }
-        if (y < height) {
+        if (y < height - 1) {
             if (!fields[x][y].hasLowerWall) {
-                result.add(new Vector2(x, y + 1));
+                result.add(new Vector3(x, y + 1, z));
+            } else if (z < startJumpCount) {
+                result.add(new Vector3(x, y + 1, z + 1));
             }
         }
         if (x > 0) {
             if (!fields[x - 1][y].hasRightWall) {
-                result.add(new Vector2(x - 1, y));
+                result.add(new Vector3(x - 1, y, z));
+            } else if (z < startJumpCount) {
+                result.add(new Vector3(x - 1, y, z + 1));
             }
         }
-        if (x < width) {
+        if (x < width - 1) {
             if (!fields[x][y].hasRightWall) {
-                result.add(new Vector2(x + 1, y));
+                result.add(new Vector3(x + 1, y, z));
+            } else if (z < startJumpCount) {
+                result.add(new Vector3(x + 1, y, z + 1));
             }
         }
         return result;
     }
 
     public Vector2 getStartPos() {
+        return start2;
+    }
+
+    public Vector3 getStartPos3D() {
         return start;
     }
 
@@ -126,7 +148,7 @@ public class Labyrinth {
     }
 
     public Vector2 getField(final Vector2 curr, final Move move) {
-        if (curr.equals(finish)) {
+        if (curr.equals(finish2)) {
             return curr;
         }
 
@@ -179,6 +201,34 @@ public class Labyrinth {
                     result = curr;
                 }
             }
+            case LEFT_JUMP -> {
+                if (x > 0) {
+                    result = new Vector2(x - 1, y);
+                } else {
+                    result = curr;
+                }
+            }
+            case RIGHT_JUMP -> {
+                if (x < width - 1) {
+                    result = new Vector2(x + 1, y);
+                } else {
+                    result = curr;
+                }
+            }
+            case UP_JUMP -> {
+                if (y > 0) {
+                    result = new Vector2(x, y - 1);
+                } else {
+                    result = curr;
+                }
+            }
+            case DOWN_JUMP -> {
+                if (y < height - 1) {
+                    result = new Vector2(x, y + 1);
+                } else {
+                    result = curr;
+                }
+            }
             default -> throw new IllegalArgumentException("Unknown move: " + move);
         }
 
@@ -189,47 +239,56 @@ public class Labyrinth {
     }
 
     public void generateDists() {
-        Queue<Vector2> queue = new ArrayDeque<>();
-        Set<Vector2> found = new HashSet<>();
+        Queue<Vector3> queue = new ArrayDeque<>();
+        Set<Vector3> found = new HashSet<>();
 
-        final Vector2 finishPos = getFinishPos();
+        final Vector3 finishPos = getFinishPos();
         queue.add(finishPos);
         found.add(finishPos);
         while (queue.size() > 0) {
-            Vector2 curr = queue.poll();
-            int dist = dists[curr.x][curr.y] + 1;
+            Vector3 curr = queue.poll();
+            int dist = dists[curr.x][curr.y][curr.z] + 1;
             if (fields[curr.x][curr.y].isHole) {
                 dist--;
             }
-            List<Vector2> neighbours = getPossibleFields(curr);
+            List<Vector3> neighbours = getPossibleFields(curr);
             if (curr.equals(start)) {
                 for (int x = 0; x < fields.length; x++) {
                     final Field[] row = fields[x];
                     for (int y = 0; y < row.length; y++) {
                         if (row[y].isHole) {
-                            neighbours.add(new Vector2(x, y));
+                            neighbours.add(new Vector3(x, y, curr.z));
                         }
                     }
                 }
             }
-            for (Vector2 neighbour : neighbours) {
+            for (Vector3 neighbour : neighbours) {
                 if (!found.contains(neighbour)) {
                     if (!fields[neighbour.x][neighbour.y].isHole) {
                         found.add(neighbour);
                         queue.add(neighbour);
-                        dists[neighbour.x][neighbour.y] = dist;
+                        dists[neighbour.x][neighbour.y][neighbour.z] = dist;
+                    }
+                }
+            }
+        }
+        for (final int[][] row : dists) {
+            for (final int[] column : row) {
+                for (int z = 0; z < column.length - 1; z++) {
+                    if (column[z] < column[z + 1]) {
+                        column[z + 1] = column[z];
                     }
                 }
             }
         }
     }
 
-    public int getDist(final int x, final int y) {
-        return dists[x][y];
+    public int getDist(final int x, final int y, final int jumpCount) {
+        return dists[x][y][jumpCount];
     }
 
-    public int getDist(final Vector2 pos) {
-        return getDist(pos.x, pos.y);
+    public int getDist(final Vector3 pos) {
+        return getDist(pos.x, pos.y, pos.z);
     }
 
     private static class MyFrame extends JFrame {
@@ -307,7 +366,7 @@ public class Labyrinth {
         }
 
         Vector2 getField(Vector2 pos, Move move) {
-            if (pos.equals(labyrinth.finish)) {
+            if (pos.equals(labyrinth.finish2)) {
                 return pos;
             }
 
@@ -356,6 +415,34 @@ public class Labyrinth {
                         } else {
                             result = new Vector2(x, y + 1);
                         }
+                    } else {
+                        result = pos;
+                    }
+                }
+                case LEFT_JUMP -> {
+                    if (x > 0) {
+                        result = new Vector2(x - 1, y);
+                    } else {
+                        result = pos;
+                    }
+                }
+                case RIGHT_JUMP -> {
+                    if (x < labyrinth.width - 1) {
+                        result = new Vector2(x + 1, y);
+                    } else {
+                        result = pos;
+                    }
+                }
+                case UP_JUMP -> {
+                    if (y > 0) {
+                        result = new Vector2(x, y - 1);
+                    } else {
+                        result = pos;
+                    }
+                }
+                case DOWN_JUMP -> {
+                    if (y < labyrinth.height - 1) {
+                        result = new Vector2(x, y + 1);
                     } else {
                         result = pos;
                     }

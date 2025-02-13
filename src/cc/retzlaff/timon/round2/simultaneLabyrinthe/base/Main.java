@@ -11,14 +11,22 @@ import java.util.List;
 
 public class Main {
 
-    private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\extensions\\DifferentSizes\\examples" +
-            "labyrinthe5.txt";
+    private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\base\\examples\\" +
+            "Jump-labyrinthe6.txt";
     public static final double SCREEN_PERCENTAGE = 0.75;
 
     public static void main(String[] args) throws IOException {
         //TODO relative path in args
         List<String> input = Files.readAllLines(Path.of(inputFilePath));
-        Labyrinths labyrinths = new Labyrinths(input);
+        int jumpCount;
+        try {
+            jumpCount = Integer.parseInt(input.get(0));
+            input.remove(0);
+        } catch (NumberFormatException e) {
+            jumpCount = 0;
+        }
+
+        Labyrinths labyrinths = new Labyrinths(input, jumpCount);
         labyrinths.draw(getFieldSize(labyrinths));
 
         LabyrinthSolver solver = new LabyrinthSolver();

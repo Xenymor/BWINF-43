@@ -8,13 +8,16 @@ public class Labyrinths {
     final Labyrinth labyrinth2;
     public final int labyrinthCount = 2;
 
-    public Labyrinths(final List<String> input) {
-        labyrinth1 = new Labyrinth(input);
+    public final int startJumpCount;
+
+    public Labyrinths(final List<String> input, final int jumpCount) {
+        startJumpCount = jumpCount;
+        labyrinth1 = new Labyrinth(input, jumpCount);
         int offset = 2 + labyrinth1.holeCount + labyrinth1.height - 1 + labyrinth1.height;
         if (offset > 1) {
             input.subList(1, offset).clear();
         }
-        labyrinth2 = new Labyrinth(input);
+        labyrinth2 = new Labyrinth(input, jumpCount);
     }
 
     public Labyrinth getLabyrinth1() {
@@ -30,21 +33,32 @@ public class Labyrinths {
         labyrinth2.draw(labyrinth1.width * fieldSize + fieldSize / 2, fieldSize);
     }
 
-    public Vector4 getStartPos() {
-        return new Vector4(labyrinth1.getStartPos(), labyrinth2.getStartPos());
+    public State getStartPos() {
+        return new State(labyrinth1.getStartPos(), labyrinth2.getStartPos(), startJumpCount);
     }
 
-    public Vector4 getFinishPos() {
-        return new Vector4(labyrinth1.getFinishPos(), labyrinth2.getFinishPos());
+    public State getFinishPos() {
+        final Vector3 finish1 = labyrinth1.getFinishPos();
+        final Vector3 finish2 = labyrinth2.getFinishPos();
+        return new State(finish1.x, finish1.y, finish2.x, finish2.y, 0);
     }
 
     Move[] values = Move.values();
 
-    public VectorMove[] getPossibleFields(final Vector4 curr) {
-        VectorMove[] result = new VectorMove[values.length];
+    public VectorMove[] getPossibleFields(final State curr) {
+        VectorMove[] result = new VectorMove[curr.jumpCount > 0 ? (values.length) : (values.length / 2)];
         for (int i = 0; i < result.length; i++) {
             final Move move = values[i];
-            result[i] = new VectorMove(new Vector4(labyrinth1.getField(new Vector2(curr.x, curr.y), move), labyrinth2.getField(new Vector2(curr.z, curr.w), move)), move, 0);
+            if (i > 3 && curr.jumpCount <= 0) {
+                continue;
+            }
+            result[i] = new VectorMove(
+                    new State(
+                            labyrinth1.getField(new Vector2(curr.x, curr.y), move),
+                            labyrinth2.getField(new Vector2(curr.z, curr.w), move),
+                            (i > 3) ? curr.jumpCount - 1 : curr.jumpCount
+                    ),
+                    move, 0);
         }
         return result;
     }

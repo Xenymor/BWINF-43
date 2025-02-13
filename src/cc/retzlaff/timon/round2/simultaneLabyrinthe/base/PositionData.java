@@ -3,13 +3,13 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 import java.util.Objects;
 
 public final class PositionData {
-    private final Vector4 vector;
+    private final State vector;
     private final double score;
     final int stepCount;
     final PositionData previous;
     final Move move;
 
-    public PositionData(Vector4 vector, double score, int stepCount, PositionData previous, Move move) {
+    public PositionData(State vector, double score, int stepCount, PositionData previous, Move move) {
         this.vector = vector;
         this.score = score;
         this.stepCount = stepCount;
@@ -27,7 +27,7 @@ public final class PositionData {
                 '}';
     }
 
-    public Vector4 getVector() {
+    public State getVector() {
         return vector;
     }
 
