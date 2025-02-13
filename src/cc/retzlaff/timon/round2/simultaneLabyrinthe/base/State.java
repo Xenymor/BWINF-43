@@ -42,4 +42,8 @@ public class State {
     public String toString() {
         return "(" + x + "|" + y + "|" + z + "|" + w + "|" + jumpCount + ")";
     }
+
+    public boolean equalsIgnoreJumpCount(final State other) {
+        return x == other.x && y == other.y && z == other.z && w == other.w;
+    }
 }

@@ -39,7 +39,7 @@ public class LabyrinthSolver {
             if (tracker.get(vec) == null) {
                 continue;
             }
-            if (vec.x == finish.x && vec.y == finish.y && vec.z == finish.z && vec.w == finish.w) {
+            if (vec.equalsIgnoreJumpCount(finish)) {
                 finishFound = true;
                 finishData = curr;
                 continue;

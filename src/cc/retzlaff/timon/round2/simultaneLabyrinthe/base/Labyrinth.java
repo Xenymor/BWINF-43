@@ -279,7 +279,8 @@ public class Labyrinth {
         for (final int[][] row : dists) {
             for (final int[] column : row) {
                 for (int z = 0; z < column.length - 1; z++) {
-                    if (column[z] < column[z + 1]) {
+                    final int value = column[z + 1];
+                    if (column[z] < value || value == 0) {
                         column[z + 1] = column[z];
                     }
                 }
