@@ -89,28 +89,32 @@ public class Labyrinth {
         if (y > 0) {
             if (!fields[x][y - 1].hasLowerWall) {
                 result.add(new Vector3(x, y - 1, z));
-            } else if (z < startJumpCount) {
+            }
+            if (z < startJumpCount) {
                 result.add(new Vector3(x, y - 1, z + 1));
             }
         }
         if (y < height - 1) {
             if (!fields[x][y].hasLowerWall) {
                 result.add(new Vector3(x, y + 1, z));
-            } else if (z < startJumpCount) {
+            }
+            if (z < startJumpCount) {
                 result.add(new Vector3(x, y + 1, z + 1));
             }
         }
         if (x > 0) {
             if (!fields[x - 1][y].hasRightWall) {
                 result.add(new Vector3(x - 1, y, z));
-            } else if (z < startJumpCount) {
+            }
+            if (z < startJumpCount) {
                 result.add(new Vector3(x - 1, y, z + 1));
             }
         }
         if (x < width - 1) {
             if (!fields[x][y].hasRightWall) {
                 result.add(new Vector3(x + 1, y, z));
-            } else if (z < startJumpCount) {
+            }
+            if (z < startJumpCount) {
                 result.add(new Vector3(x + 1, y, z + 1));
             }
         }
@@ -252,7 +256,7 @@ public class Labyrinth {
                 dist--;
             }
             List<Vector3> neighbours = getPossibleFields(curr);
-            if (curr.equals(start)) {
+            if (curr.equalsIgnoreZ(start)) {
                 for (int x = 0; x < fields.length; x++) {
                     final Field[] row = fields[x];
                     for (int y = 0; y < row.length; y++) {

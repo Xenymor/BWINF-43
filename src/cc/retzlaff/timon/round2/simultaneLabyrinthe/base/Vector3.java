@@ -21,6 +21,13 @@ public class Vector3 {
         return x == vector3.x && y == vector3.y && z == vector3.z;
     }
 
+    public boolean equalsIgnoreZ(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Vector3 vector3 = (Vector3) o;
+        return x == vector3.x && y == vector3.y;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(x, y, z);
