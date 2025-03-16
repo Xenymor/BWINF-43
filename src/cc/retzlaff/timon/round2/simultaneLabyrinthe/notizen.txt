@@ -18,9 +18,9 @@ Weighted Average monoton -> Müssen Knoten nur einmal angucken
 Durch begrenzten Ram um 8s langsamer (dringelassen)
 Unterschiedlich große Labyrinthe in Erweiterung eingebaut (Könnte in normales integriert werden)
 Sprünge eingeführt (max. 3)
+Heap-Overflow Probleme
 
 Erweiterungsideen:
 - n-Labyrinthe (Schwierig wegen BitSet)
 - unterschiedliche Start/Endpunkte
-- Kann n Wände zerstören
 - Verschiedene Kosten pro Zug

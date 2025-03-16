@@ -12,7 +12,7 @@ import java.util.List;
 public class Main {
 
     private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\base\\examples\\" +
-            "Jump-labyrinthe6.txt";
+            "Jump-labyrinthe4.txt";
     public static final double SCREEN_PERCENTAGE = 0.75;
 
     public static void main(String[] args) throws IOException {
@@ -31,7 +31,7 @@ public class Main {
 
         LabyrinthSolver solver = new LabyrinthSolver();
         long startTime = System.nanoTime();
-        final Heuristic heuristic = new WeightedAverage(0.999);
+        final Heuristic heuristic = new WeightedAverage(0.99999);
         List<PositionData> path = solver.solveSimultaneously(labyrinths, heuristic);
         System.out.println("Time needed: " + (System.nanoTime() - startTime) / 1_000_000_000f + "s");
         System.out.println("Using heuristic: " + heuristic.getName());
@@ -60,6 +60,10 @@ public class Main {
             Time needed: 54.312172s
             Using heuristic: WeightedAverage: 0.999-0.001
             Length: 1012
+        Jump-labyrinthe4.txt:
+            Time needed: 10.888596s
+            Using heuristic: WeightedAverage: 0.99999-1.0E-5
+            Length: 1834
         */
         /*for (int i = 0; i < path.size() - 1; i++) {
             System.out.println(path.get(i).move + path.get(i).getVector().toString());
