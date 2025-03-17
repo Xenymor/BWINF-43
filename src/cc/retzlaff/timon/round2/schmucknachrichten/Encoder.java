@@ -79,19 +79,18 @@ public class Encoder {
             int leafCount = sig[0] - (i == 0 ? 0 : prevSig[0]);
             final List<Node> layer = tree[i];
             for (int j = leafCount; j < layer.size(); j++) {
-                final List<Node> childLayer = tree[i + 1];
-                expand(layer.get(j), d, childLayer);
+                expand(layer.get(j), d, tree);
             }
         }
     }
 
-    private static void expand(final Node node, final int[] d, final List<Node> layer) {
+    private static void expand(final Node node, final int[] d, final List<Node>[] tree) {
         for (int i = 0; i < d.length; i++) {
             final int depth = node.depth + i;
             for (int j = 0; j < d[i]; j++) {
                 final Node child = new Node(depth);
                 node.addChild(child);
-                layer.add(child);
+                tree[child.depth].add(child);
             }
         }
     }
