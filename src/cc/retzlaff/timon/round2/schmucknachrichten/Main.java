@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +14,18 @@ public class Main {
 
         int colorCount = Integer.parseInt(lines.get(0));
         int[] colorSizes = new int[colorCount];
-        Integer[] colorIndices = new Integer[colorCount];
         String[] sizeStrings = lines.get(1).split(" ");
         for (int i = 0; i < colorSizes.length; i++) {
             colorSizes[i] = Integer.parseInt(sizeStrings[i]);
-            colorIndices[i] = i;
         }
-
-        Arrays.sort(colorIndices, Comparator.comparingInt((a) -> -colorSizes[a]));
+        Arrays.sort(colorSizes);
 
         lines.remove(0);
         lines.remove(0);
 
         String msg = String.join("\n", lines);
 
-        Map<Character, String> charTable = Encoder.generateTable(msg, colorIndices);
+        Map<Character, String> charTable = Encoder.generateTable(msg, colorSizes);
 
         StringBuilder builder = new StringBuilder();
         int length = 0;
@@ -46,7 +42,6 @@ public class Main {
 
         final String encoded = builder.toString();
         System.out.println("Decoded as: " + Decoder.decode(encoded, charTable));
-        System.out.println("Decoded as: " + Decoder.decode(encoded.substring(1) + encoded.charAt(0), charTable));
     }
 
     private static int getLength(final String str, final int[] colorSizes) {
