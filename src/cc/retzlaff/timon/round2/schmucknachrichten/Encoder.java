@@ -129,6 +129,8 @@ public class Encoder {
         while (toCheck.size() > 0) {
             Signature curr = toCheck.poll();
             int[] sig = curr.signature;
+            //TODO check if this line is valid
+            trees.remove(sig);
             double newCost = curr.cost + getSum(sig[0], n, probabilities);
             for (int q = 0; q <= sig[1]; q++) {
                 int[] newSig = add(shift(sig), d, q);
