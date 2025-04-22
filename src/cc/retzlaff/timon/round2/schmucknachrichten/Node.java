@@ -18,9 +18,6 @@ public class Node implements Comparable<Node> {
     }
 
     public void addChild(Node node) {
-        if (children.size() == 3) {
-            throw new IllegalStateException("Node already has 3 children");
-        }
         node.index = children.size();
         children.add(node);
         node.parent = this;

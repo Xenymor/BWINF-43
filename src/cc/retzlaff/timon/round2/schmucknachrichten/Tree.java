@@ -78,12 +78,13 @@ public class Tree {
         }
     }
 
-    public void optimize(final Double[] probabilities, final int optimizationSteps) {
+    public int optimize(final Double[] probabilities, final int optimizationSteps) {
         for (int i = 0; i < optimizationSteps; i++) {
             if (!optimizationStep(probabilities)) {
-                break;
+                return i+1;
             }
         }
+        return optimizationSteps;
     }
 
     private boolean optimizationStep(final Double[] probabilities) {
