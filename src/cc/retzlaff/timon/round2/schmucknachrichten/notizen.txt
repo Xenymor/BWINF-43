@@ -3,3 +3,6 @@ Paper 1 implementiert -> zu langsam
 Eigenen Greedy-Algorithmus
 	Schnell
 	Gute Lösungen
+Zu langsam mit hohen n
+	-> empirische Ermittlung von guter Grenze
+		=> n + 3r (KA warum)

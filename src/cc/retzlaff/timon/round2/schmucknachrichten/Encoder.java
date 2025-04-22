@@ -59,7 +59,9 @@ public class Encoder {
         int maxSteps = 0;
         int stepSum = 0;
         int stepCount = 0;
-        while (tree.getLeafCount() <= n * (costs.length - 1)) {
+        //TODO check why working
+        int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length-1));
+        while (tree.getLeafCount() <= maxLeaves) {
             if (tree.getLeafCount() >= n) {
                 Tree optimized = tree.clone();
                 int steps = optimized.optimize(probabilities, OPTIMIZATION_STEPS);
@@ -76,7 +78,7 @@ public class Encoder {
         }
         System.out.println("n=" + n + " r=" + costs.length);
         System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
-        System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * (costs.length - 1)) +
+        System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * 2) +
                 " with cost: " + bestCost);
         return best;
     }
