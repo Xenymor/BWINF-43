@@ -68,6 +68,8 @@ public class Encoder {
             }
             tree.expand();
         }
+        System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * (costs.length - 1)) +
+                " with cost: " + bestCost);
         return best;
     }
 
