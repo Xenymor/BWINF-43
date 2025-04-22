@@ -115,18 +115,12 @@ public class Tree {
         }
     }
 
-    int counter = 0;
     private int getBestAction(final Double[] probabilities, int bestAction, double bestCost) {
         for (int i = 0; i < nodes.size(); i++) {
             final Node node = nodes.get(i);
             if (node.isLeaf) {
                 continue;
             }
-            counter++;
-            if (counter == 2) {
-                System.out.println();
-            }
-            System.out.println(counter);
             List<Node> children = new ArrayList<>(node.children);
             //TODO inefficient
             Set<Node> descendants = node.getDescendants();
