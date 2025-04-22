@@ -61,7 +61,7 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isLeaf, System.identityHashCode(children), code, depth, System.identityHashCode(parent), index);
+        return System.identityHashCode(this);
     }
 
     public void clearChildren() {
