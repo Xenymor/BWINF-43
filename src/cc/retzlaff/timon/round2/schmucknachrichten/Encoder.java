@@ -4,55 +4,36 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
+    private static final int OPTIMIZATION_STEPS = 10;
+
     public static Map<Character, String> generateTable(final String msg, final int[] costs) {
         final MapInt mapInt = getCounts(msg);
         Map<Character, AtomicInteger> counts = mapInt.counts;
         final int n = counts.size();
         int sum = mapInt.sum;
         Double[] probabilities = getProbabilities(counts, n, sum);
-
         Arrays.sort(costs);
-        final int maxCost = costs[costs.length - 1];
-        final int[] d = getD(costs, maxCost);
 
-        Signature best = getBest(costs, n, probabilities, maxCost, d);
-
-        return getTable(best, d, counts);
+        Tree best = getBest(probabilities, costs);
+        return getMap(counts, best);
     }
 
-    private static Map<Character, String> getTable(final Signature bottom, final int[] d, final Map<Character, AtomicInteger> counts) {
-        List<Signature> signatures = getSignatures(bottom);
-
-        List<Node>[] tree = initializeTree(signatures);
-        buildTree(d, signatures, tree);
-
-        return getMap(counts, tree);
-    }
-
-    private static Map<Character, String> getMap(final Map<Character, AtomicInteger> counts, final List<Node>[] tree) {
-        tree[0].get(0).startRecursiveCodeAssign();
+    private static Map<Character, String> getMap(final Map<Character, AtomicInteger> counts, final Tree tree) {
+        final Node root = tree.nodes.get(0);
+        if (root.parent != null) {
+            throw new IllegalStateException("Root has a parent");
+        }
+        root.startRecursiveCodeAssign();
 
         Map<Character, String> result = new HashMap<>();
         Queue<Character> sortedChars = getSortedChars(counts);
-        int layerInd = 1;
-        List<Node> layer = tree[layerInd];
-        int index = 0;
-        Character curr = sortedChars.poll();
-        while (true) {
-            final Node node = layer.get(index);
-            if (node.isLeaf) {
-                result.put(curr, node.getCode());
-                if (sortedChars.size() == 0) {
-                    break;
-                }
-                curr = sortedChars.poll();
-            }
-            index++;
-            if (index >= layer.size()) {
-                index = 0;
-                layerInd++;
-                layer = tree[layerInd];
-            }
+        Collections.sort(tree.leaves);
+        while (sortedChars.size() > 0) {
+            Character key = sortedChars.poll();
+            Node node = tree.leaves.get(0);
+            tree.leaves.remove(0);
+            assert node != null;
+            result.put(key, node.code);
         }
         return result;
     }
@@ -70,93 +51,22 @@ public class Encoder {
         return result;
     }
 
-    private static void buildTree(final int[] d, final List<Signature> signatures, final List<Node>[] tree) {
-        int[] prevSig;
-        int[] sig = signatures.get(0).signature;
-        for (int i = 0; i < tree.length; i++) {
-            prevSig = sig;
-            sig = signatures.get(i).signature;
-            int leafCount = sig[0] - (i == 0 ? 0 : prevSig[0]);
-            final List<Node> layer = tree[i];
-            for (int j = leafCount; j < layer.size(); j++) {
-                expand(layer.get(j), d, tree);
-            }
-        }
-    }
-
-    private static void expand(final Node node, final int[] d, final List<Node>[] tree) {
-        for (int i = 0; i < d.length; i++) {
-            final int depth = node.depth + i;
-            for (int j = 0; j < d[i]; j++) {
-                final Node child = new Node(depth);
-                node.addChild(child);
-                tree[child.depth].add(child);
-            }
-        }
-    }
-
-    private static List<Node>[] initializeTree(final List<Signature> signatures) {
-        List<Node>[] tree = new List[signatures.size()];
-        Arrays.setAll(tree, i -> new ArrayList<>());
-
-        final Node rootNode = new Node(0);
-        tree[0].add(rootNode);
-
-        return tree;
-    }
-
-    private static List<Signature> getSignatures(final Signature bottom) {
-        List<Signature> signatures = new ArrayList<>();
-        Signature currSignature = bottom;
-        while (currSignature != null) {
-            signatures.add(currSignature);
-            currSignature = currSignature.previous;
-        }
-        Collections.reverse(signatures);
-        return signatures;
-    }
-
-    private static Signature getBest(final int[] costs, final int n, final Double[] probabilities, final int maxCost, final int[] d) {
-        Signature best = new Signature(new int[]{0}, Double.POSITIVE_INFINITY, null);
-        Map<int[], Signature> trees = new HashMap<>();
-        PriorityQueue<Signature> toCheck = new PriorityQueue<>();
-        final int[] root = new int[maxCost + 1];
-        add(root, d, 1);
-        root[0] = 0;
-        final Signature rootSig = new Signature(root, 0, null);
-        toCheck.add(rootSig);
-        trees.put(root, rootSig);
-        while (toCheck.size() > 0) {
-            Signature curr = toCheck.poll();
-            int[] sig = curr.signature;
-            //TODO check if this line is valid
-            trees.remove(sig);
-            double newCost = curr.cost + getSum(sig[0], n, probabilities);
-            for (int q = 0; q <= sig[1]; q++) {
-                int[] newSig = add(shift(sig), d, q);
-                if (Arrays.equals(sig, newSig)) {
-                    continue;
-                }
-                final int leafCount = getSum(newSig);
-                if (leafCount <= n * (costs.length - 1)) {
-                    Signature newSignature;
-                    if (trees.containsKey(newSig)) {
-                        newSignature = trees.get(newSig);
-                        if (newSignature.cost > newCost) {
-                            newSignature.changePath(curr, newCost);
-                        }
-                    } else {
-                        newSignature = new Signature(newSig, newCost, curr);
-                        trees.put(newSig, newSignature);
-                        toCheck.add(newSignature);
-                    }
-                    if (newSig[0] >= n) {
-                        if (newSignature.cost < best.cost) {
-                            best = newSignature;
-                        }
-                    }
+    private static Tree getBest(final Double[] probabilities, final int[] costs) {
+        Tree tree = new Tree(costs);
+        Tree best = null;
+        double bestCost = Double.MAX_VALUE;
+        final int n = probabilities.length;
+        while (tree.getLeafCount() <= n * (costs.length - 1)) {
+            if (tree.getLeafCount() >= n) {
+                Tree optimized = tree.clone();
+                optimized.optimize(probabilities, OPTIMIZATION_STEPS);
+                double cost = optimized.getCost(probabilities);
+                if (cost < bestCost) {
+                    bestCost = cost;
+                    best = optimized;
                 }
             }
+            tree.expand();
         }
         return best;
     }

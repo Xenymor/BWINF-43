@@ -27,6 +27,10 @@ public class Main {
 
         Map<Character, String> charTable = Encoder.generateTable(msg, colorSizes);
 
+        for (Character character : charTable.keySet()) {
+            System.out.println(character + ": " + charTable.get(character));
+        }
+
         StringBuilder builder = new StringBuilder();
         int length = 0;
 
