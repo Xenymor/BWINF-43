@@ -91,11 +91,6 @@ public class Tree {
         int bestAction = -1;
         double bestCost = Double.MAX_VALUE;
 
-        System.out.println(getLeafCount());
-        if (getLeafCount() == 41) {
-            System.out.println();
-        }
-
         bestAction = getBestAction(probabilities, bestAction, bestCost);
 
         return applyAction(bestAction);
@@ -213,6 +208,7 @@ public class Tree {
         ActionCost[] result = new ActionCost[count];
         Arrays.fill(result, new ActionCost(-1, Double.MAX_VALUE, null));
         for (int i = 0; i < nodes.size(); i++) {
+            testedDepths.clear();
             final Node node = nodes.get(i);
             if (node.isLeaf) {
                 continue;
@@ -225,9 +221,10 @@ public class Tree {
             List<Node> leavesClone = new ArrayList<>(leaves);
             for (int k = 0; k < leavesClone.size(); k++) {
                 final Node leaf = leavesClone.get(k);
-                if (descendants.contains(leaf)) {
+                if (descendants.contains(leaf) || testedDepths.contains(leaf.depth)) {
                     continue;
                 }
+                testedDepths.add(leaf.depth);
                 if (leaf.children.size() > 0) {
                     System.out.println("Leaf has children: " + leaf + " " + leaf.children.size() + " " + leaf.depth);
                 }

@@ -77,7 +77,7 @@ public class Encoder {
             }
             tree.expand();
         }
-        //best = best.deepOptimize(probabilities, OPTIMIZATION_STEPS, CANDIDATE_COUNT);
+        best = best.deepOptimize(probabilities, OPTIMIZATION_STEPS, CANDIDATE_COUNT);
         System.out.println("n=" + n + " r=" + costs.length);
         System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
         System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * 2) +
