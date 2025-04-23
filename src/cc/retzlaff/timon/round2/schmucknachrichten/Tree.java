@@ -91,6 +91,11 @@ public class Tree {
         int bestAction = -1;
         double bestCost = Double.MAX_VALUE;
 
+        System.out.println(getLeafCount());
+        if (getLeafCount() == 41) {
+            System.out.println();
+        }
+
         bestAction = getBestAction(probabilities, bestAction, bestCost);
 
         return applyAction(bestAction);
@@ -101,13 +106,22 @@ public class Tree {
             return false;
         } else {
             int nodeIndex = bestAction & 0xFFFF;
-            int targetIndex = bestAction >> 16;
-            if (targetIndex >= leaves.size()) {
+            int targetDepth = bestAction >> 16;
+            Node node = nodes.get(nodeIndex);
+            Set<Node> descendants = node.getDescendants();
+            Node target = null;
+            for (Node leaf : leaves) {
+                if (leaf.depth == targetDepth && !descendants.contains(leaf)) {
+                    target = leaf;
+                    break;
+                }
+            }
+            if (target == null) {
                 return false;
             }
-            Node node = nodes.get(nodeIndex);
-            Node target = leaves.get(targetIndex);
-            assert target != null;
+            if (target.equals(node)) {
+                return false;
+            }
             leaves.remove(target);
             target.addChildren(node.children, depths);
             node.clearChildren();
@@ -116,23 +130,26 @@ public class Tree {
         }
     }
 
+    private final Set<Integer> testedDepths = new HashSet<>();
+
     private int getBestAction(final Double[] probabilities, int bestAction, double bestCost) {
         for (int i = 0; i < nodes.size(); i++) {
             final Node node = nodes.get(i);
             if (node.isLeaf) {
                 continue;
             }
+            testedDepths.clear();
             List<Node> children = new ArrayList<>(node.children);
             //TODO inefficient
             Set<Node> descendants = node.getDescendants();
             node.clearChildren();
             leaves.add(node);
             List<Node> leavesClone = new ArrayList<>(leaves);
-            for (int k = 0; k < leavesClone.size(); k++) {
-                final Node leaf = leavesClone.get(k);
-                if (descendants.contains(leaf)) {
+            for (final Node leaf : leavesClone) {
+                if (descendants.contains(leaf) || testedDepths.contains(leaf.depth)) {
                     continue;
                 }
+                testedDepths.add(leaf.depth);
                 if (leaf.children.size() > 0) {
                     System.out.println("Leaf has children: " + leaf + " " + leaf.children.size() + " " + leaf.depth);
                 }
@@ -143,7 +160,7 @@ public class Tree {
                 leaves.add(leaf);
                 if (cost < bestCost) {
                     bestCost = cost;
-                    bestAction = i + (k << 16);
+                    bestAction = i + (leaf.depth << 16);
                 }
             }
             node.addChildren(children, depths);
