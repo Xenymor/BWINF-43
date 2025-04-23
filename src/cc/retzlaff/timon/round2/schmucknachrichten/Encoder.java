@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
     private static final int OPTIMIZATION_STEPS = 20;
+    private static final int CANDIDATE_COUNT = 10;
 
     public static Map<Character, String> generateTable(final String msg, final int[] costs) {
         final MapInt mapInt = getCounts(msg);
@@ -69,13 +70,14 @@ public class Encoder {
                 stepSum += steps;
                 stepCount++;
                 double cost = optimized.getCost(probabilities);
-                if (cost < bestCost) {
+                if (cost <= bestCost) {
                     bestCost = cost;
                     best = optimized;
                 }
             }
             tree.expand();
         }
+        //best.deepOptimize(probabilities, OPTIMIZATION_STEPS, CANDIDATE_COUNT);
         System.out.println("n=" + n + " r=" + costs.length);
         System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
         System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * 2) +

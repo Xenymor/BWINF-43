@@ -6,3 +6,5 @@ Eigenen Greedy-Algorithmus
 Zu langsam mit hohen n
 	-> empirische Ermittlung von guter Grenze
 		=> n + 3r (KA warum)
+Bessere Ergebnisse gewünscht
+	=> Deep Optimization eingeführt
