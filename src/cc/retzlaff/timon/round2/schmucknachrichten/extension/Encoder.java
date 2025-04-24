@@ -43,7 +43,6 @@ public class Encoder {
         for (Character key : counts.keySet()) {
             buff.add(new CharInt(key, counts.get(key).get()));
         }
-        //TODO remove
         Queue<Character> result = new ArrayDeque<>(buff.size());
         while (buff.size() > 0) {
             result.add(buff.poll().character);
@@ -59,7 +58,6 @@ public class Encoder {
         int maxSteps = 0;
         int stepSum = 0;
         int stepCount = 0;
-        //TODO check why working estimation
         int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length - 1));
         while (tree.getLeafCount() <= maxLeaves) {
             if (tree.getLeafCount() >= n) {
