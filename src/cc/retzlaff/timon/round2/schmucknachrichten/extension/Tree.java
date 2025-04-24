@@ -192,12 +192,6 @@ public class Tree {
             final List<Node> newNodes = node.children;
             for (int i = nLeaves ? 1 : 0; i < newNodes.size(); i++) {
                 final Node potentialMarker = newNodes.get(i);
-                if (potentialMarker.code.equals("100000111010110000001")) {
-                    System.out.println(potentialMarker.code.length());
-                }
-                if (potentialMarker.code.length() == 21) {
-                    System.out.println();
-                }
                 if (isMarker(codes, potentialMarker, n)) {
                     return potentialMarker;
                 }
