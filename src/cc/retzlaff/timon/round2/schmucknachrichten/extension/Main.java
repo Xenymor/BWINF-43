@@ -48,6 +48,7 @@ public class Main {
 
         final String encoded = builder.toString();
         System.out.println("Decoded as: " + Decoder.decode(encoded, charTable));
+        System.out.println("Decoded shifted as: " + Decoder.decode(encoded.substring(2) + encoded.substring(0, 2), charTable));
     }
 
     private static int getLength(final String str, final int[] colorSizes) {
