@@ -12,3 +12,4 @@ Bessere Ergebnisse gewünscht
 Erweiterungsideen:
 Einbauen von Redundanz, um Übertragungsfehler zu erkennen/korrigieren
 Mehrere Zeichen zusammenfassen
+Endezeichen

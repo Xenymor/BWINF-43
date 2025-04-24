@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
-    private static final int OPTIMIZATION_STEPS = 20;
+    private static final int OPTIMIZATION_STEPS = 1000;
     private static final int CANDIDATE_COUNT = 10;
 
     public static Map<Character, String> generateTable(final String msg, final int[] costs) {
@@ -77,9 +77,9 @@ public class Encoder {
             }
             tree.expand();
         }
-        best = best.deepOptimize(probabilities, OPTIMIZATION_STEPS, CANDIDATE_COUNT);
         System.out.println("n=" + n + " r=" + costs.length);
         System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
+        assert best != null;
         System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * 2) +
                 " with cost: " + bestCost);
         return best;
@@ -156,8 +156,8 @@ public class Encoder {
     }
 
     private static class CharInt implements Comparable<CharInt> {
-        public Character character;
-        public int count;
+        public final Character character;
+        public final int count;
 
         public CharInt(final Character character, final int count) {
             this.character = character;
@@ -171,8 +171,8 @@ public class Encoder {
     }
 
     private static class MapInt {
-        public Map<Character, AtomicInteger> counts;
-        public int sum;
+        public final Map<Character, AtomicInteger> counts;
+        public final int sum;
 
         public MapInt(final Map<Character, AtomicInteger> counts, final int sum) {
             this.counts = counts;

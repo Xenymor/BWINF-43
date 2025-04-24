@@ -5,9 +5,8 @@ import java.util.*;
 public class Tree {
     final int[] depths;
 
-    List<Node> nodes;
-    //TODO optimize
-    List<Node> leaves;
+    final List<Node> nodes;
+    final List<Node> leaves;
 
     public Tree(final int[] depths) {
         this.depths = depths;
@@ -135,7 +134,6 @@ public class Tree {
             }
             testedDepths.clear();
             List<Node> children = new ArrayList<>(node.children);
-            //TODO inefficient
             Set<Node> descendants = node.getDescendants();
             node.clearChildren();
             leaves.add(node);
@@ -164,95 +162,4 @@ public class Tree {
         return bestAction;
     }
 
-    public Tree deepOptimize(final Double[] probabilities, final int optimizationSteps, final int candidateCount) {
-        Tree[] candidates = new Tree[candidateCount];
-        ActionCost[] bestActions = getBestActions(probabilities, candidateCount);
-        for (int i = 0; i < candidateCount; i++) {
-            candidates[i] = clone();
-            candidates[i].applyAction(bestActions[i].action());
-        }
-
-        ActionCost[] actions = new ActionCost[candidateCount];
-        ActionCost filler = new ActionCost(-1, Double.MAX_VALUE, null);
-        for (int i = 0; i < optimizationSteps; i++) {
-            Arrays.fill(actions, filler);
-            for (int j = 0; j < candidateCount; j++) {
-                ActionCost[] currActions = candidates[j].getBestActions(probabilities, candidateCount);
-                for (int k = 0; k < candidateCount; k++) {
-                    insert(actions, currActions[k]);
-                }
-            }
-            for (int j = 0; j < candidateCount; j++) {
-                final ActionCost action = actions[j];
-                final Tree clone = action.tree().clone();
-                candidates[j] = clone;
-                clone.applyAction(action.action());
-            }
-        }
-        double bestCost = Double.MAX_VALUE;
-        int bestIndex = -1;
-        for (int i = 0; i < candidateCount; i++) {
-            double cost = candidates[i].getCost(probabilities);
-            if (cost < bestCost) {
-                bestCost = cost;
-                bestIndex = i;
-            }
-        }
-        if (bestIndex != 0) {
-            System.out.println("Best tree not first candidate");
-        }
-        return candidates[bestIndex];
-    }
-
-    private ActionCost[] getBestActions(final Double[] probabilities, final int count) {
-        ActionCost[] result = new ActionCost[count];
-        Arrays.fill(result, new ActionCost(-1, Double.MAX_VALUE, null));
-        for (int i = 0; i < nodes.size(); i++) {
-            testedDepths.clear();
-            final Node node = nodes.get(i);
-            if (node.isLeaf) {
-                continue;
-            }
-            List<Node> children = new ArrayList<>(node.children);
-            //TODO inefficient
-            Set<Node> descendants = node.getDescendants();
-            node.clearChildren();
-            leaves.add(node);
-            List<Node> leavesClone = new ArrayList<>(leaves);
-            for (int k = 0; k < leavesClone.size(); k++) {
-                final Node leaf = leavesClone.get(k);
-                if (descendants.contains(leaf) || testedDepths.contains(leaf.depth)) {
-                    continue;
-                }
-                testedDepths.add(leaf.depth);
-                if (leaf.children.size() > 0) {
-                    System.out.println("Leaf has children: " + leaf + " " + leaf.children.size() + " " + leaf.depth);
-                }
-                leaves.remove(leaf);
-                leaf.addChildren(children, depths);
-                double cost = getCost(probabilities);
-                leaf.clearChildren();
-                leaves.add(leaf);
-                if (cost < result[count - 1].cost()) {
-                    int action = i + (k << 16);
-                    insert(result, new ActionCost(action, cost, this));
-                }
-            }
-            node.addChildren(children, depths);
-            leaves.remove(node);
-        }
-        return result;
-    }
-
-    private void insert(final ActionCost[] result, final ActionCost actionCost) {
-        for (int i = 0; i < result.length; i++) {
-            if (result[i].cost() > actionCost.cost()) {
-                if (result.length - 1 - i >= 0) {
-                    System.arraycopy(result, i, result, i + 1, result.length - 1 - i);
-                }
-                result[i] = actionCost;
-                return;
-            }
-        }
-    }
 }

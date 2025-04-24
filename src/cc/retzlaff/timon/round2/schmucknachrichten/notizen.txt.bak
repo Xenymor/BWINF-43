@@ -8,3 +8,7 @@ Zu langsam mit hohen n
 		=> n + 3r (KA warum)
 Bessere Ergebnisse gewünscht
 	=> Deep Optimization eingeführt
+	
+Erweiterungsideen:
+Einbauen von Redundanz, um Übertragungsfehler zu erkennen/korrigieren
+Mehrere Zeichen zusammenfassen
