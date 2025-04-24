@@ -8,7 +8,11 @@ Zu langsam mit hohen n
 		=> n + 3r (KA warum)
 Bessere Ergebnisse gewünscht
 	=> Deep Optimization eingeführt
+	Weggemacht
+Nicht alle leaves probieren, sondern nur auf jeder Tiefe eins
+	
 	
 Erweiterungsideen:
 Einbauen von Redundanz, um Übertragungsfehler zu erkennen/korrigieren
 Mehrere Zeichen zusammenfassen
+Endezeichen
