@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
-    private static final int OPTIMIZATION_STEPS = 1000;
+    private static final int OPTIMIZATION_STEPS = 200;
     private static final int CANDIDATE_COUNT = 10;
 
     public static Map<Character, String> generateTable(final String msg, final int[] costs) {
