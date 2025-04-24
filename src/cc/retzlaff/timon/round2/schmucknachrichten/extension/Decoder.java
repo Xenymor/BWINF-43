@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.schmucknachrichten;
+package cc.retzlaff.timon.round2.schmucknachrichten.extension;
 
 import java.util.HashMap;
 import java.util.Map;

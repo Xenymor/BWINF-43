@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.schmucknachrichten;
+package cc.retzlaff.timon.round2.schmucknachrichten.base;
 
 import java.io.IOException;
 import java.nio.file.Files;

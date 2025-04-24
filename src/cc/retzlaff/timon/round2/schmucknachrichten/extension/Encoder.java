@@ -1,4 +1,4 @@
-package cc.retzlaff.timon.round2.schmucknachrichten;
+package cc.retzlaff.timon.round2.schmucknachrichten.extension;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
