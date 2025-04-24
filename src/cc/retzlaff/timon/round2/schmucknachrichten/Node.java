@@ -99,7 +99,4 @@ public class Node implements Comparable<Node> {
         }
     }
 
-    public String getCode() {
-        return code;
-    }
 }

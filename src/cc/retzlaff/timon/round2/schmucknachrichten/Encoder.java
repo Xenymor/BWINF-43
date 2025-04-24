@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
     private static final int OPTIMIZATION_STEPS = 200;
-    private static final int CANDIDATE_COUNT = 10;
 
     public static Map<Character, String> generateTable(final String msg, final int[] costs) {
         final MapInt mapInt = getCounts(msg);
@@ -61,7 +60,7 @@ public class Encoder {
         int stepSum = 0;
         int stepCount = 0;
         //TODO check why working estimation
-        int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length-1));
+        int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length - 1));
         while (tree.getLeafCount() <= maxLeaves) {
             if (tree.getLeafCount() >= n) {
                 Tree optimized = tree.clone();
@@ -96,46 +95,6 @@ public class Encoder {
         return probabilities;
     }
 
-    private static int[] getD(final int[] costs, final int maxCost) {
-        final int[] d = new int[maxCost + 1];
-        d[0] = -1;
-        for (int cost : costs) {
-            d[cost]++;
-        }
-        return d;
-    }
-
-    private static int getSum(final int[] arr) {
-        int res = 0;
-        for (int curr : arr) {
-            res += curr;
-        }
-        return res;
-    }
-
-    private static int[] shift(final int[] sig) {
-        int[] res = new int[sig.length];
-        res[0] = sig[0] + sig[1];
-        System.arraycopy(sig, 2, res, 1, sig.length - 2);
-        res[res.length - 1] = 0;
-        return res;
-    }
-
-    private static double getSum(final int start, final int end, final Double[] arr) {
-        double sum = 0;
-        for (int t = start; t < end; t++) {
-            sum += arr[t];
-        }
-        return sum;
-    }
-
-    private static int[] add(final int[] arr, final int[] toAdd, final int factor) {
-        for (int i = 0; i < toAdd.length; i++) {
-            arr[i] += toAdd[i] * factor;
-        }
-        return arr;
-    }
-
     private static MapInt getCounts(final String msg) {
         Map<Character, AtomicInteger> counts = new HashMap<>();
         int sum = 0;
@@ -147,22 +106,7 @@ public class Encoder {
         return new MapInt(counts, sum);
     }
 
-    private static int max(final int[] costs) {
-        int max = 0;
-        for (int cost : costs) {
-            max = Math.max(max, cost);
-        }
-        return max;
-    }
-
-    private static class CharInt implements Comparable<CharInt> {
-        public final Character character;
-        public final int count;
-
-        public CharInt(final Character character, final int count) {
-            this.character = character;
-            this.count = count;
-        }
+    private record CharInt(Character character, int count) implements Comparable<CharInt> {
 
         @Override
         public int compareTo(final CharInt o) {
@@ -170,13 +114,6 @@ public class Encoder {
         }
     }
 
-    private static class MapInt {
-        public final Map<Character, AtomicInteger> counts;
-        public final int sum;
-
-        public MapInt(final Map<Character, AtomicInteger> counts, final int sum) {
-            this.counts = counts;
-            this.sum = sum;
-        }
+    private record MapInt(Map<Character, AtomicInteger> counts, int sum) {
     }
 }
