@@ -181,31 +181,37 @@ public class Tree {
         int index = n;
         while (true) {
             boolean nLeaves = leaves.size() == n;
-            final int nodeIndex = nLeaves ? index - 1 : index;
-            final Node node = leaves.get(nodeIndex);
-            expand(node, nodeIndex);
+            if (nLeaves) {
+                index--;
+            }
+            final Node node = leaves.get(index);
+            expand(node, index);
             node.assignCodesRecursively(node.parent.code, node.index);
             Collections.sort(leaves);
             codes = getCodeSet(n);
             final List<Node> newNodes = node.children;
             for (int i = nLeaves ? 1 : 0; i < newNodes.size(); i++) {
                 final Node potentialMarker = newNodes.get(i);
+                if (potentialMarker.code.equals("100000111010110000001")) {
+                    System.out.println(potentialMarker.code.length());
+                }
+                if (potentialMarker.code.length() == 21) {
+                    System.out.println();
+                }
                 if (isMarker(codes, potentialMarker, n)) {
                     return potentialMarker;
                 }
             }
-            index++;
+            if (nLeaves) {
+                index++;
+            }
         }
     }
 
     private boolean isMarker(final Set<String> codes, final Node potentialMarker, int n) {
-        if (potentialMarker.code.equals("0022220")) {
-            System.out.println();
-        }
         boolean isMarker = true;
         for (int j = 0; j < n; j++) {
             final Node leaf = leaves.get(j);
-            System.out.println(leaf.code);
             if (potentialMarker == leaf) {
                 continue;
             }

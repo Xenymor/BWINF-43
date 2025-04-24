@@ -36,6 +36,7 @@ public class Main {
 
         final char[] charArray = msg.toCharArray();
         builder.append(charTable.get("marker"));
+        length += getLength(charTable.get("marker"), colorSizes);
         for (final char c : charArray) {
             final String str = charTable.get(Character.toString(c));
             length += getLength(str, colorSizes);
