@@ -9,7 +9,9 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //TODO replace path in configuration with relative path
+        if (args.length != 1) {
+            throw new IllegalArgumentException("Please provide the path to the input file as an argument.");
+        }
         List<String> lines = Files.readAllLines(Path.of(args[0]));
 
         int colorCount = Integer.parseInt(lines.get(0));
