@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Decoder {
-    public static String decode(final String msg, final Map<Character, String> charTable) {
-        final Map<String, Character> table = new HashMap<>(charTable.size());
-        for (Character character : charTable.keySet()) {
+    public static String decode(final String msg, final Map<String, String> charTable) {
+        final Map<String, String> table = new HashMap<>(charTable.size());
+        for (String character : charTable.keySet()) {
             table.put(charTable.get(character), character);
         }
 

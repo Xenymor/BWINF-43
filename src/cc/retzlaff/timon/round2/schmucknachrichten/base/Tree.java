@@ -73,7 +73,7 @@ public class Tree {
                 leaves.add(child);
             }
         } else {
-            System.out.println("No more leaves to expand.");
+            System.out.println("No more leaves to expandHighest.");
         }
     }
 

@@ -62,19 +62,24 @@ public class Tree {
         return cost;
     }
 
-    public void expand() {
+    public void expandHighest() {
         if (leaves.size() > 0) {
             final Node node = leaves.get(0);
-            leaves.remove(0);
-            for (final int depth : depths) {
-                final Node child = new Node(node.depth + depth, node);
-                node.addChild(child);
-                nodes.add(child);
-                leaves.add(child);
-            }
+            expand(node, 0);
         } else {
-            System.out.println("No more leaves to expand.");
+            System.out.println("No more leaves to expandHighest.");
         }
+    }
+
+    private void expand(final Node node, int index) {
+        leaves.remove(index);
+        for (final int depth : depths) {
+            final Node child = new Node(node.depth + depth, node);
+            node.addChild(child);
+            nodes.add(child);
+            leaves.add(child);
+        }
+        node.assignDepthsRecursively(depths);
     }
 
     public int optimize(final Double[] probabilities, final int optimizationSteps) {
@@ -160,5 +165,89 @@ public class Tree {
             leaves.remove(node);
         }
         return bestAction;
+    }
+
+    public Node createMarker(int n) {
+        nodes.get(0).startRecursiveCodeAssign();
+        Collections.sort(leaves);
+        Set<String> codes = getCodeSet(n);
+        for (int j = n; j < leaves.size(); j++) {
+            final Node potentialMarker = leaves.get(j);
+            boolean isMarker = isMarker(codes, potentialMarker, n);
+            if (isMarker) {
+                return potentialMarker;
+            }
+        }
+        int index = n;
+        while (true) {
+            boolean nLeaves = leaves.size() == n;
+            final int nodeIndex = nLeaves ? index - 1 : index;
+            final Node node = leaves.get(nodeIndex);
+            expand(node, nodeIndex);
+            node.assignCodesRecursively(node.parent.code, node.index);
+            Collections.sort(leaves);
+            codes = getCodeSet(n);
+            final List<Node> newNodes = node.children;
+            for (int i = nLeaves ? 1 : 0; i < newNodes.size(); i++) {
+                final Node potentialMarker = newNodes.get(i);
+                if (isMarker(codes, potentialMarker, n)) {
+                    return potentialMarker;
+                }
+            }
+            index++;
+        }
+    }
+
+    private boolean isMarker(final Set<String> codes, final Node potentialMarker, int n) {
+        if (potentialMarker.code.equals("0022220")) {
+            System.out.println();
+        }
+        boolean isMarker = true;
+        for (int j = 0; j < n; j++) {
+            final Node leaf = leaves.get(j);
+            System.out.println(leaf.code);
+            if (potentialMarker == leaf) {
+                continue;
+            }
+            for (int i = 1; i <= Math.min(leaf.code.length(), potentialMarker.code.length()); i++) {
+                if (leaf.code.substring(leaf.code.length() - i).equals(potentialMarker.code.substring(0, i))) {
+                    int lastIndex = i;
+                    for (int k = i; k < potentialMarker.code.length(); k++) {
+                        final String substring = potentialMarker.code.substring(lastIndex, k + 1);
+                        if (codes.contains(substring)) {
+                            lastIndex = k + 1;
+                        }
+                    }
+                    if (lastIndex < potentialMarker.code.length()) {
+                        for (int k = 0; k < n; k++) {
+                            final Node oLeaf = leaves.get(k);
+                            if (oLeaf == leaf) {
+                                continue;
+                            }
+                            if (oLeaf.code.startsWith(potentialMarker.code.substring(lastIndex))) {
+                                isMarker = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        isMarker = false;
+                        break;
+                    }
+                }
+            }
+            if (!isMarker) {
+                break;
+            }
+        }
+        return isMarker;
+    }
+
+    private Set<String> getCodeSet(final int n) {
+        Set<String> codeSet = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            final Node leaf = leaves.get(i);
+            codeSet.add(leaf.code);
+        }
+        return codeSet;
     }
 }

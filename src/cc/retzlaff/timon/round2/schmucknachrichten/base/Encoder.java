@@ -39,16 +39,9 @@ public class Encoder {
     }
 
     private static Queue<Character> getSortedChars(final Map<Character, AtomicInteger> counts) {
-        PriorityQueue<CharInt> buff = new PriorityQueue<>(counts.size(), Collections.reverseOrder());
-        for (Character key : counts.keySet()) {
-            buff.add(new CharInt(key, counts.get(key).get()));
-        }
-        //TODO remove
-        Queue<Character> result = new ArrayDeque<>(buff.size());
-        while (buff.size() > 0) {
-            result.add(buff.poll().character);
-        }
-        return result;
+        PriorityQueue<Character> buff = new PriorityQueue<>(counts.size(), (o1, o2) -> Integer.compare(counts.get(o2).get(), counts.get(o1).get()));
+        buff.addAll(counts.keySet());
+        return buff;
     }
 
     private static Tree getBest(final Double[] probabilities, final int[] costs) {

@@ -25,9 +25,9 @@ public class Main {
 
         String msg = String.join("\n", lines);
 
-        Map<Character, String> charTable = Encoder.generateTable(msg, colorSizes);
+        Map<String, String> charTable = Encoder.generateTable(msg, colorSizes);
 
-        for (Character character : charTable.keySet()) {
+        for (String character : charTable.keySet()) {
             System.out.println(character + ": " + charTable.get(character));
         }
 
@@ -35,8 +35,9 @@ public class Main {
         int length = 0;
 
         final char[] charArray = msg.toCharArray();
+        builder.append(charTable.get("marker"));
         for (final char c : charArray) {
-            final String str = charTable.get(c);
+            final String str = charTable.get(Character.toString(c));
             length += getLength(str, colorSizes);
             builder.append(str);
         }

@@ -78,7 +78,7 @@ public class Node implements Comparable<Node> {
         }
     }
 
-    private void assignDepthsRecursively(final int[] depths) {
+    void assignDepthsRecursively(final int[] depths) {
         for (int i = 0; i < children.size(); i++) {
             final Node child = children.get(i);
             child.depth = depths[i] + depth;

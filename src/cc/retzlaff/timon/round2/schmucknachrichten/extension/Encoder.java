@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Encoder {
     private static final int OPTIMIZATION_STEPS = 200;
 
-    public static Map<Character, String> generateTable(final String msg, final int[] costs) {
+    public static Map<String, String> generateTable(final String msg, final int[] costs) {
         final MapInt mapInt = getCounts(msg);
         Map<Character, AtomicInteger> counts = mapInt.counts;
         final int n = counts.size();
@@ -15,17 +15,20 @@ public class Encoder {
         Arrays.sort(costs);
 
         Tree best = getBest(probabilities, costs);
-        return getMap(counts, best);
+        Node marker = best.createMarker(n);
+        final Map<String, String> map = getMap(counts, best);
+        map.put("marker", marker.code);
+        return map;
     }
 
-    private static Map<Character, String> getMap(final Map<Character, AtomicInteger> counts, final Tree tree) {
+    private static Map<String, String> getMap(final Map<Character, AtomicInteger> counts, final Tree tree) {
         final Node root = tree.nodes.get(0);
         if (root.parent != null) {
             throw new IllegalStateException("Root has a parent");
         }
         root.startRecursiveCodeAssign();
 
-        Map<Character, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
         Queue<Character> sortedChars = getSortedChars(counts);
         Collections.sort(tree.leaves);
         while (sortedChars.size() > 0) {
@@ -33,21 +36,15 @@ public class Encoder {
             Node node = tree.leaves.get(0);
             tree.leaves.remove(0);
             assert node != null;
-            result.put(key, node.code);
+            result.put(key.toString(), node.code);
         }
         return result;
     }
 
     private static Queue<Character> getSortedChars(final Map<Character, AtomicInteger> counts) {
-        PriorityQueue<CharInt> buff = new PriorityQueue<>(counts.size(), Collections.reverseOrder());
-        for (Character key : counts.keySet()) {
-            buff.add(new CharInt(key, counts.get(key).get()));
-        }
-        Queue<Character> result = new ArrayDeque<>(buff.size());
-        while (buff.size() > 0) {
-            result.add(buff.poll().character);
-        }
-        return result;
+        PriorityQueue<Character> buff = new PriorityQueue<>(counts.size(), (o1, o2) -> Integer.compare(counts.get(o2).get(), counts.get(o1).get()));
+        buff.addAll(counts.keySet());
+        return buff;
     }
 
     private static Tree getBest(final Double[] probabilities, final int[] costs) {
@@ -72,7 +69,7 @@ public class Encoder {
                     best = optimized;
                 }
             }
-            tree.expand();
+            tree.expandHighest();
         }
         System.out.println("n=" + n + " r=" + costs.length);
         System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
