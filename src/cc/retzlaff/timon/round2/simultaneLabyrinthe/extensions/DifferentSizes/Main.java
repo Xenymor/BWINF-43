@@ -11,13 +11,13 @@ import java.util.List;
 
 public class Main {
 
-    private static final String inputFilePath = "C:\\Users\\timon\\Documents\\Programmieren\\Java\\BWINF-43\\src\\cc\\retzlaff\\timon\\round2\\simultaneLabyrinthe\\extensions\\DifferentSizes\\examples"
-            + "\\labyrinth07.txt";
     public static final double SCREEN_PERCENTAGE = 0.75;
 
     public static void main(String[] args) throws IOException {
-        //TODO relative path in args
-        List<String> input = Files.readAllLines(Path.of(inputFilePath));
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Please provide the path to the input file as an argument.");
+        }
+        List<String> input = Files.readAllLines(Path.of(args[0]));
         Labyrinths labyrinths = new Labyrinths(input);
         labyrinths.draw(getFieldSize(labyrinths));
 
