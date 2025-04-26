@@ -1,10 +1,10 @@
 package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 
-public record VectorMove(State state,
-                         Move move, int stepCount) {
+public record StateMove(State state,
+                        Move move, int stepCount) {
     @Override
     public String toString() {
-        return "VectorMove{" +
+        return "StateMove{" +
                 "getState=" + state +
                 ", move=" + move +
                 ", getStepCount=" + stepCount +

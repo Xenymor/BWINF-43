@@ -4,7 +4,7 @@ public record VectorMove(Vector4 vector,
                          Move move, int stepCount) {
     @Override
     public String toString() {
-        return "VectorMove{" +
+        return "StateMove{" +
                 "getState=" + vector +
                 ", move=" + move +
                 ", getStepCount=" + stepCount +

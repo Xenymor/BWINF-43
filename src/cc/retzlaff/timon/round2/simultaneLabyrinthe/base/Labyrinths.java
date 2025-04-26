@@ -45,14 +45,14 @@ public class Labyrinths {
 
     Move[] values = Move.values();
 
-    public VectorMove[] getPossibleFields(final State curr) {
-        VectorMove[] result = new VectorMove[curr.jumpCount > 0 ? (values.length) : (values.length / 2)];
+    public StateMove[] getPossibleFields(final State curr) {
+        StateMove[] result = new StateMove[curr.jumpCount > 0 ? (values.length) : (values.length / 2)];
         for (int i = 0; i < result.length; i++) {
             final Move move = values[i];
             if (i > 3 && curr.jumpCount <= 0) {
                 continue;
             }
-            result[i] = new VectorMove(
+            result[i] = new StateMove(
                     new State(
                             labyrinth1.getField(new Vector2(curr.x, curr.y), move),
                             labyrinth2.getField(new Vector2(curr.z, curr.w), move),

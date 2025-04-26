@@ -45,9 +45,9 @@ public class LabyrinthSolver {
                 continue;
             }
             tracker.removeFromMap(state);
-            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(state);
+            StateMove[] possibleNextFields = labyrinths.getPossibleFields(state);
             final int stepCount = curr.getStepCount() + 1;
-            for (VectorMove next : possibleNextFields) {
+            for (StateMove next : possibleNextFields) {
                 if (tracker.hasSeen(next.state())) {
                     final PositionData oldPositionData = tracker.get(next.state());
                     if (oldPositionData != null && oldPositionData.getStepCount() > stepCount) {
