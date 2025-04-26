@@ -20,6 +20,9 @@ Unterschiedlich große Labyrinthe in Erweiterung eingebaut (Könnte in normales 
 Sprünge eingeführt (max. 3)
 Heap-Overflow Probleme
 
+
+Erwähne hohes RAM-Usage
+
 Erweiterungsideen:
 - n-Labyrinthe (Schwierig wegen BitSet)
 - unterschiedliche Start/Endpunkte

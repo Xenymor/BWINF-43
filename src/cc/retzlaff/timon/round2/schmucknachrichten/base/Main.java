@@ -28,12 +28,16 @@ public class Main {
         String msg = String.join("\n", lines);
 
         Map<Character, String> charTable = Encoder.generateTable(msg, colorSizes);
+        StringBuilder builder = new StringBuilder();
 
         for (Character character : charTable.keySet()) {
-            System.out.println(character + ": " + charTable.get(character));
+            builder.append(character).append(": ").append(charTable.get(character)).append(", ");
         }
+        builder.delete(builder.length() - 2, builder.length());
+        builder.append("\n");
+        System.out.println(builder);
+        builder.setLength(0);
 
-        StringBuilder builder = new StringBuilder();
         int length = 0;
 
         final char[] charArray = msg.toCharArray();
@@ -42,9 +46,9 @@ public class Main {
             length += getLength(str, colorSizes);
             builder.append(str);
         }
-        System.out.println("Encoded message: " + msg);
-        System.out.println("As: " + builder);
-        System.out.println("In " + builder.length() + " pearls (" + ((float) builder.length() / (msg.length() * 8) * 100) + "%) = " + length + "mm");
+        //System.out.println("Encoded message: " + msg);
+        //System.out.println("As: " + builder);
+        System.out.println("Encoded in: " + builder.length() + " pearls (" + ((float) builder.length() / (msg.length() * 8) * 100) + "%) = " + length + "mm");
 
         final String encoded = builder.toString();
         System.out.println("Decoded as: " + Decoder.decode(encoded, charTable));

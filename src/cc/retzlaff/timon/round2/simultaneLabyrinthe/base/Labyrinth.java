@@ -366,7 +366,6 @@ public class Labyrinth {
                     }
                     currPos = next;
                 }
-                System.out.println(count);
             }
         }
 
