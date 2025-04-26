@@ -65,7 +65,7 @@ public class Main {
             Length: 1834
         */
         /*for (int i = 0; i < path.size() - 1; i++) {
-            System.out.println(path.get(i).move + path.get(i).getVector().toString());
+            System.out.println(path.get(i).move + path.get(i).getState().toString());
         }*/
         System.out.println("Length: " + (path.size() - 1));
         labyrinths.drawSolution(getFieldSize(labyrinths), path);

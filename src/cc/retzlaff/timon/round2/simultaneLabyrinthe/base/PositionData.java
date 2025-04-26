@@ -3,14 +3,14 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 import java.util.Objects;
 
 public final class PositionData {
-    private final State vector;
+    private final State state;
     private final double score;
     final int stepCount;
     final PositionData previous;
     final Move move;
 
-    public PositionData(State vector, double score, int stepCount, PositionData previous, Move move) {
-        this.vector = vector;
+    public PositionData(State state, double score, int stepCount, PositionData previous, Move move) {
+        this.state = state;
         this.score = score;
         this.stepCount = stepCount;
         this.previous = previous;
@@ -20,15 +20,15 @@ public final class PositionData {
     @Override
     public String toString() {
         return "PositionData{" +
-                "vector=" + vector +
+                "vector=" + state +
                 ", score=" + score +
                 ", stepCount=" + stepCount +
                 ", previous=" + previous +
                 '}';
     }
 
-    public State getVector() {
-        return vector;
+    public State getState() {
+        return state;
     }
 
     public double getScore() {
@@ -44,14 +44,14 @@ public final class PositionData {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (PositionData) obj;
-        return Objects.equals(this.vector, that.vector) &&
+        return Objects.equals(this.state, that.state) &&
                 Double.doubleToLongBits(this.score) == Double.doubleToLongBits(that.score) &&
                 this.stepCount == that.stepCount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vector, score, stepCount);
+        return Objects.hash(state, score, stepCount);
     }
 
 }

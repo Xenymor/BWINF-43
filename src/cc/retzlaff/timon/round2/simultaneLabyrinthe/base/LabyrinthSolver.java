@@ -35,30 +35,30 @@ public class LabyrinthSolver {
         boolean finishFound = false;
         while (!finishFound) {
             final PositionData curr = toCheck.poll();
-            final State vec = curr.getVector();
-            if (tracker.get(vec) == null) {
+            final State state = curr.getState();
+            if (tracker.get(state) == null) {
                 continue;
             }
-            if (vec.equalsIgnoreJumpCount(finish)) {
+            if (state.equalsIgnoreJumpCount(finish)) {
                 finishFound = true;
                 finishData = curr;
                 continue;
             }
-            tracker.removeFromMap(vec);
-            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(vec);
+            tracker.removeFromMap(state);
+            VectorMove[] possibleNextFields = labyrinths.getPossibleFields(state);
             final int stepCount = curr.getStepCount() + 1;
             for (VectorMove next : possibleNextFields) {
-                if (tracker.hasSeen(next.vector())) {
-                    final PositionData oldPositionData = tracker.get(next.vector());
+                if (tracker.hasSeen(next.state())) {
+                    final PositionData oldPositionData = tracker.get(next.state());
                     if (oldPositionData != null && oldPositionData.getStepCount() > stepCount) {
-                        final PositionData nextScore = new PositionData(next.vector(), heuristic.getScore(next.vector(), labyrinths) + stepCount, stepCount, curr, next.move());
-                        tracker.put(next.vector(), nextScore);
+                        final PositionData nextScore = new PositionData(next.state(), heuristic.getScore(next.state(), labyrinths) + stepCount, stepCount, curr, next.move());
+                        tracker.put(next.state(), nextScore);
                         toCheck.add(nextScore);
                     }
                 } else {
-                    final State nextVector = next.vector();
-                    final PositionData nextScore = new PositionData(nextVector, heuristic.getScore(nextVector, labyrinths) + stepCount, stepCount, curr, next.move());
-                    tracker.put(nextVector, nextScore);
+                    final State nextState = next.state();
+                    final PositionData nextScore = new PositionData(nextState, heuristic.getScore(nextState, labyrinths) + stepCount, stepCount, curr, next.move());
+                    tracker.put(nextState, nextScore);
                     toCheck.add(nextScore);
                 }
             }
@@ -77,7 +77,7 @@ public class LabyrinthSolver {
         //TODO remove DEBUG Code
         for (int i = 0; i < path.size(); i++) {
             final PositionData data = path.get(i);
-            final State field = data.getVector();
+            final State field = data.getState();
             if (heuristic.getScore(field, labyrinths) > path.size() - i - 1) {
                 System.out.println("Alarm");
             }
