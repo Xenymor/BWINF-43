@@ -52,7 +52,6 @@ public class Encoder {
         int maxSteps = 0;
         int stepSum = 0;
         int stepCount = 0;
-        //TODO check why working estimation
         int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length - 1));
         while (tree.getLeafCount() <= maxLeaves) {
             if (tree.getLeafCount() >= n) {

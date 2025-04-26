@@ -53,7 +53,6 @@ public class Node implements Comparable<Node> {
         if (o == null || getClass() != o.getClass()) return false;
         final Node node = (Node) o;
         return isLeaf == node.isLeaf && depth == node.depth && index == node.index && Objects.equals(children, node.children) && Objects.equals(code, node.code) && parent == node.parent;
-        //TODO check comparison
     }
 
     @Override
