@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -29,8 +30,9 @@ public class Main {
 
         Map<String, String> charTable = Encoder.generateTable(msg, colorSizes);
         StringBuilder builder = new StringBuilder();
+        Encoder.MapInt counts = Encoder.getCounts(msg);
 
-        for (String character : charTable.keySet()) {
+        for (String character : charTable.keySet().stream().sorted((a, b) -> Integer.compare(counts.counts().computeIfAbsent(b.charAt(0), c -> new AtomicInteger(Integer.MAX_VALUE)).get(), counts.counts().computeIfAbsent(a.charAt(0), c -> new AtomicInteger(Integer.MAX_VALUE)).get())).toList()) {
             builder.append(character).append(": ").append(charTable.get(character)).append(", ");
         }
         builder.delete(builder.length() - 2, builder.length());

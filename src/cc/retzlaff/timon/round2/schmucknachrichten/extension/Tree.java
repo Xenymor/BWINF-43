@@ -205,9 +205,10 @@ public class Tree {
 
     private boolean isMarker(final Set<String> codes, final Node potentialMarker, int n) {
         boolean isMarker = true;
-        for (int j = 0; j < n; j++) {
+        leaves.add(n, potentialMarker);
+        for (int j = 0; j < n+1; j++) {
             final Node leaf = leaves.get(j);
-            if (potentialMarker == leaf) {
+            if (leaf.equals(potentialMarker)) {
                 continue;
             }
             for (int i = 1; i <= Math.min(leaf.code.length(), potentialMarker.code.length()); i++) {
@@ -222,9 +223,6 @@ public class Tree {
                     if (lastIndex < potentialMarker.code.length()) {
                         for (int k = 0; k < n; k++) {
                             final Node oLeaf = leaves.get(k);
-                            if (oLeaf == leaf) {
-                                continue;
-                            }
                             if (oLeaf.code.startsWith(potentialMarker.code.substring(lastIndex))) {
                                 isMarker = false;
                                 break;
@@ -240,6 +238,7 @@ public class Tree {
                 break;
             }
         }
+        leaves.remove(n);
         return isMarker;
     }
 

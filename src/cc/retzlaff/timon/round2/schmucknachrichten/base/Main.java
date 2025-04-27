@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Encoder.MapInt counts = Encoder.getCounts(msg);
 
-        for (Character character : charTable.keySet().stream().sorted(Comparator.comparingInt(a -> counts.counts().get(a).get())).toList()) {
+        for (Character character : charTable.keySet().stream().sorted((a, b) -> Integer.compare(counts.counts().get(b).get(), counts.counts().get(a).get())).toList()) {
             builder.append(character).append(": ").append(charTable.get(character)).append(", ");
         }
         builder.delete(builder.length() - 2, builder.length());
