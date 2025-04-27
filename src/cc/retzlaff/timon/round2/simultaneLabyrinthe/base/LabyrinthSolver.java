@@ -9,8 +9,8 @@ public class LabyrinthSolver {
 
     public List<PositionData> solveSimultaneously(final Labyrinths labyrinths, Heuristic heuristic) {
         labyrinths.generateDists();
-        final int solveLab1Len = labyrinths.labyrinth1.getDist(labyrinths.labyrinth1.getStartPos3D());
-        final int solveLab2Len = labyrinths.labyrinth2.getDist(labyrinths.labyrinth2.getStartPos3D());
+        final int solveLab1Len = labyrinths.labyrinth1.getDistIgnoringJumps(labyrinths.labyrinth1.getStartPos3D());
+        final int solveLab2Len = labyrinths.labyrinth2.getDistIgnoringJumps(labyrinths.labyrinth2.getStartPos3D());
         System.out.println("Lab1 Best way: " + solveLab1Len);
         System.out.println("Lab2 Best way: " + solveLab2Len);
         if (labyrinths.startJumpCount > 0) {

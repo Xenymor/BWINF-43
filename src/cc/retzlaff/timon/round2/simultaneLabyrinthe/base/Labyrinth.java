@@ -279,7 +279,7 @@ public class Labyrinth {
             for (final int[] column : row) {
                 for (int z = 0; z < column.length - 1; z++) {
                     final int value = column[z + 1];
-                    if (column[z] < value || value == 0) {
+                    if ((column[z] < value || value == 0) && column[z] != 0) {
                         column[z + 1] = column[z];
                     }
                 }
@@ -293,6 +293,10 @@ public class Labyrinth {
 
     public int getDist(final Vector3 pos) {
         return getDist(pos.x, pos.y, pos.z);
+    }
+
+    public int getDistIgnoringJumps(final Vector3 pos) {
+        return getDist(pos.x, pos.y, startJumpCount);
     }
 
     private static class MyFrame extends JFrame {

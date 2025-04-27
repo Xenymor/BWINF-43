@@ -30,9 +30,17 @@ public class Main {
 
         Map<String, String> charTable = Encoder.generateTable(msg, colorSizes);
         StringBuilder builder = new StringBuilder();
-        Encoder.MapInt counts = Encoder.getCounts(msg);
+        Map<Character, AtomicInteger> counts = Encoder.getCounts(msg).counts();
 
-        for (String character : charTable.keySet().stream().sorted((a, b) -> Integer.compare(counts.counts().computeIfAbsent(b.charAt(0), c -> new AtomicInteger(Integer.MAX_VALUE)).get(), counts.counts().computeIfAbsent(a.charAt(0), c -> new AtomicInteger(Integer.MAX_VALUE)).get())).toList()) {
+        for (String character : charTable.keySet().stream().sorted((a, b) -> {
+            if (a.equals("marker")) {
+                return -1;
+            }
+            if (b.equals("marker")) {
+                return 1;
+            }
+            return Integer.compare(counts.get(b.charAt(0)).get(), counts.get(a.charAt(0)).get());
+        }).toList()) {
             builder.append(character).append(": ").append(charTable.get(character)).append(", ");
         }
         builder.delete(builder.length() - 2, builder.length());
