@@ -86,7 +86,7 @@ public class Encoder {
         return probabilities;
     }
 
-    private static MapInt getCounts(final String msg) {
+    static MapInt getCounts(final String msg) {
         Map<Character, AtomicInteger> counts = new HashMap<>();
         int sum = 0;
         final char[] chars = msg.toCharArray();
@@ -97,6 +97,6 @@ public class Encoder {
         return new MapInt(counts, sum);
     }
 
-    private record MapInt(Map<Character, AtomicInteger> counts, int sum) {
+    record MapInt(Map<Character, AtomicInteger> counts, int sum) {
     }
 }
