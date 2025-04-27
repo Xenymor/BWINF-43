@@ -39,7 +39,7 @@ public class LabyrinthSolver {
         while (!finishFound) {
             final PositionData curr = toCheck.poll();
             final State state = curr.getState();
-            if (tracker.get(state) == null) {
+            if (tracker.isExpanded(state)) {
                 continue;
             }
             if (state.equalsIgnoreJumpCount(finish)) {

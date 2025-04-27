@@ -37,6 +37,10 @@ public class StateTracker {
         return previous.size();
     }
 
+    public boolean isExpanded(final State state) {
+        return get(state) == null;
+    }
+
     private static class MyBitSet {
         private final long[] words;
 
