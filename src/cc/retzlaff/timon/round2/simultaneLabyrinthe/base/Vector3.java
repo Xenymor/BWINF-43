@@ -3,9 +3,9 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 import java.util.Objects;
 
 public class Vector3 {
-    int x;
-    int y;
-    int z;
+    final int x;
+    final int y;
+    final int z;
 
     public Vector3(final int x, final int y, final int z) {
         this.x = x;

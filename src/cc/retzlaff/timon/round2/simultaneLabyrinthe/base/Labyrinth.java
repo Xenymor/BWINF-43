@@ -74,7 +74,6 @@ public class Labyrinth {
             final int y = Integer.parseInt(coords[1]);
             fields[x][y].setIsHole(true);
         }
-        offset += holeCount;
     }
 
     public Vector3 getFinishPos() {
@@ -342,13 +341,11 @@ public class Labyrinth {
                 g.setColor(Color.RED);
                 Vector2 currPos = labyrinth.getStartPos().clone();
                 Vector2 next;
-                int count = 0;
                 for (int i = 1; i < path.size(); i++) {
                     final Move currMove = path.get(i);
                     next = getField(currPos, currMove);
 
                     if (next.equals(currPos)) {
-                        count++;
                         g.setColor(Color.BLUE);
                         g.fillOval(currPos.x * fieldSize + fieldSize / 2 - lineSize * 2, currPos.y * fieldSize + fieldSize / 2 - lineSize * 2, lineSize * 4, lineSize * 4);
                     }

@@ -82,13 +82,14 @@ public class Tree {
         node.assignDepthsRecursively(depths);
     }
 
-    public int optimize(final Double[] probabilities, final int optimizationSteps) {
-        for (int i = 0; i < optimizationSteps; i++) {
+    public int optimize(final Double[] probabilities) {
+        int i = 0;
+        while (true) {
             if (!optimizationStep(probabilities)) {
                 return i + 1;
             }
+            i++;
         }
-        return optimizationSteps;
     }
 
     private boolean optimizationStep(final Double[] probabilities) {

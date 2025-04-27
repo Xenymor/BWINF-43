@@ -13,6 +13,9 @@ public class LabyrinthSolver {
         final int solveLab2Len = labyrinths.labyrinth2.getDist(labyrinths.labyrinth2.getStartPos3D());
         System.out.println("Lab1 Best way: " + solveLab1Len);
         System.out.println("Lab2 Best way: " + solveLab2Len);
+        if (labyrinths.startJumpCount > 0) {
+            System.out.println("Start jump count: " + labyrinths.startJumpCount);
+        }
         if (Math.min(solveLab1Len, solveLab2Len) == 0) {
             System.out.println("There is no solution");
             return new ArrayList<>();
@@ -62,7 +65,7 @@ public class LabyrinthSolver {
                     toCheck.add(nextScore);
                 }
             }
-            if (((steps++) & (1024 * 1024 - 1)) == 0) {
+            if (((steps++) & (1024 * 4096 - 1)) == 0) {
                 final PositionData top = toCheck.peek();
                 System.out.println(
                         "Queue: bestWayLen = " + top.getStepCount() + " + " + (top.getScore() - top.getStepCount())

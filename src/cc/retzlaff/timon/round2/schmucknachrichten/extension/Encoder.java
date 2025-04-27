@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Encoder {
-    private static final int OPTIMIZATION_STEPS = 300;
 
     public static Map<String, String> generateTable(final String msg, final int[] costs) {
         final MapInt mapInt = getCounts(msg);
@@ -59,7 +58,7 @@ public class Encoder {
         while (tree.getLeafCount() <= maxLeaves) {
             if (tree.getLeafCount() >= n) {
                 Tree optimized = tree.clone();
-                int steps = optimized.optimize(probabilities, OPTIMIZATION_STEPS);
+                int steps = optimized.optimize(probabilities);
                 maxSteps = Math.max(maxSteps, steps);
                 stepSum += steps;
                 stepCount++;

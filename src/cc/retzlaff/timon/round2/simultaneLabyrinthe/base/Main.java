@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Please provide the path to the input file as an argument.");
+            throw new IllegalArgumentException("Please provide the path to the input file as first argument.");
         }
         List<String> input = Files.readAllLines(Path.of(args[0]));
         int jumpCount;

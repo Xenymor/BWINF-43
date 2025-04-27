@@ -37,7 +37,7 @@ public class Labyrinths {
         return new Vector4(labyrinth1.getFinishPos(), labyrinth2.getFinishPos());
     }
 
-    Move[] values = Move.values();
+    final Move[] values = Move.values();
 
     public VectorMove[] getPossibleFields(final Vector4 curr) {
         VectorMove[] result = new VectorMove[values.length];

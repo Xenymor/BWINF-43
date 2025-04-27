@@ -43,7 +43,7 @@ public class Labyrinths {
         return new State(finish1.x, finish1.y, finish2.x, finish2.y, 0);
     }
 
-    Move[] values = Move.values();
+    final Move[] values = Move.values();
 
     public StateMove[] getPossibleFields(final State curr) {
         StateMove[] result = new StateMove[curr.jumpCount > 0 ? (values.length) : (values.length / 2)];

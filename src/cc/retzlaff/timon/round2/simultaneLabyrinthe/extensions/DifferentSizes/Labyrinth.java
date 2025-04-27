@@ -65,7 +65,6 @@ public class Labyrinth {
             final int y = Integer.parseInt(coords[1]);
             fields[x][y].setIsHole(true);
         }
-        offset += holeCount;
     }
 
     public Vector2 getFinishPos() {

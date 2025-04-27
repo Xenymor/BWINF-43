@@ -3,8 +3,8 @@ package cc.retzlaff.timon.round2.simultaneLabyrinthe.base;
 import java.util.Objects;
 
 public class Vector2 {
-    int x;
-    int y;
+    final int x;
+    final int y;
 
     public Vector2(final int x, final int y) {
         this.x = x;
