@@ -1,0 +1,113 @@
+package cc.retzlaff.timon.round2.schmucknachrichten.extension;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Encoder {
+
+    public static Map<String, String> generateTable(final String msg, final int[] costs) {
+        final MapInt mapInt = getCounts(msg);
+        Map<Character, AtomicInteger> counts = mapInt.counts;
+        final int n = counts.size();
+        int sum = mapInt.sum;
+        Double[] probabilities = getProbabilities(counts, n, sum);
+        Arrays.sort(costs);
+
+        Tree best = getBest(probabilities, costs);
+        Node marker = best.createMarker(n);
+        final Map<String, String> map = getMap(counts, best);
+        map.put("marker", marker.code);
+        return map;
+    }
+
+    private static Map<String, String> getMap(final Map<Character, AtomicInteger> counts, final Tree tree) {
+        final Node root = tree.nodes.get(0);
+        if (root.parent != null) {
+            throw new IllegalStateException("Root has a parent");
+        }
+        root.startRecursiveCodeAssign();
+
+        Map<String, String> result = new HashMap<>();
+        Queue<Character> sortedChars = getSortedChars(counts);
+        Collections.sort(tree.leaves);
+        while (sortedChars.size() > 0) {
+            Character key = sortedChars.poll();
+            Node node = tree.leaves.get(0);
+            tree.leaves.remove(0);
+            assert node != null;
+            result.put(key.toString(), node.code);
+        }
+        return result;
+    }
+
+    private static Queue<Character> getSortedChars(final Map<Character, AtomicInteger> counts) {
+        PriorityQueue<Character> buff = new PriorityQueue<>(counts.size(), (o1, o2) -> Integer.compare(counts.get(o2).get(), counts.get(o1).get()));
+        buff.addAll(counts.keySet());
+        return buff;
+    }
+
+    private static Tree getBest(final Double[] probabilities, final int[] costs) {
+        Tree tree = new Tree(costs);
+        Tree best = null;
+        double bestCost = Double.MAX_VALUE;
+        final int n = probabilities.length;
+        int maxSteps = 0;
+        int stepSum = 0;
+        int stepCount = 0;
+        int maxLeaves = Math.min(n + costs.length * 3, n * (costs.length - 1));
+        while (tree.getLeafCount() <= maxLeaves) {
+            if (tree.getLeafCount() >= n) {
+                Tree optimized = tree.clone();
+                int steps = optimized.optimize(probabilities);
+                maxSteps = Math.max(maxSteps, steps);
+                stepSum += steps;
+                stepCount++;
+                double cost = optimized.getCost(probabilities);
+                if (cost <= bestCost) {
+                    bestCost = cost;
+                    best = optimized;
+                }
+            }
+            tree.expandHighest();
+        }
+        System.out.println("n=" + n + " r=" + costs.length);
+        System.out.println("Max steps: " + maxSteps + " avg steps: " + (stepSum / (double) stepCount));
+        assert best != null;
+        System.out.println("Best tree leaf count: " + best.getLeafCount() + "/" + (n * 2) +
+                " with cost: " + bestCost);
+        return best;
+    }
+
+    private static Double[] getProbabilities(final Map<Character, AtomicInteger> counts, final int n, final double sum) {
+        Double[] probabilities = new Double[n];
+        int i = 0;
+        for (Character key : counts.keySet()) {
+            probabilities[i] = counts.get(key).get() / sum;
+            i++;
+        }
+        Arrays.sort(probabilities, Collections.reverseOrder());
+        return probabilities;
+    }
+
+    static MapInt getCounts(final String msg) {
+        Map<Character, AtomicInteger> counts = new HashMap<>();
+        int sum = 0;
+        final char[] chars = msg.toCharArray();
+        for (char curr : chars) {
+            counts.computeIfAbsent(curr, k -> new AtomicInteger()).incrementAndGet();
+            sum++;
+        }
+        return new MapInt(counts, sum);
+    }
+
+    private record CharInt(Character character, int count) implements Comparable<CharInt> {
+
+        @Override
+        public int compareTo(final CharInt o) {
+            return Integer.compare(count, o.count);
+        }
+    }
+
+    record MapInt(Map<Character, AtomicInteger> counts, int sum) {
+    }
+}
